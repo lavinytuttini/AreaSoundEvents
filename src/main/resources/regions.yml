@@ -1,0 +1,7 @@
+regions: # Don't touch! is for plugin proposals
+  areasoundevents: # The region's id
+    name: areasoundevents # Region's name (has to be associate with the id)
+    sound: minecraft:music.end # The sound which will be reproduced
+    source: MUSIC # The source that sound plays (master, music, records...)
+    volume: 0.5 # The volume of the sound (0~1)
+    pitch: 1 # The pitch of the sound (0~1)
