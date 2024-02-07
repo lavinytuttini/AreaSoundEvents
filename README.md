@@ -1,5 +1,20 @@
 # AreaSoundEvents Plugin Documentation
 
+## Table of Contents
+
+1. [Introduction](#introduction)
+2. [Features](#features)
+3. [Installation](#installation)
+4. [Configuration](#configuration)
+5. [Commands](#commands)
+6. [Permissions](#permissions)
+7. [Usage](#usage)
+    - [Creating Region Sound Events](#creating-region-sound-events)
+    - [Viewing Region Sound Events](#viewing-region-sound-events)
+    - [Deleting Region Sound Events](#deleting-region-sound-events)
+8. [Troubleshooting](#troubleshooting)
+9. [Credits](#credits)
+
 ## Introduction
 
 AreaSoundEvents is a Bukkit/Spigot plugin designed to add region-based sound events to your Minecraft server. This plugin allows server administrators to define regions within the game world and associate specific sounds, sources, volumes, and pitches with those regions. Players within these regions will hear the defined sound effects, creating immersive audio experiences within your Minecraft server.
