@@ -1,0 +1,24 @@
+name: AreaSoundEvents
+version: "${project.version}"
+main: me.lavinytuttini.areasoundevents.AreaSoundEvents
+api-version: "1.19"
+prefix: "AreaSoundEvents"
+load: STARTUP
+authors: [LavinyTuttini]
+description: A plugin that an admin can set an area, attach a flag for that area. When a player enters the area a .ogg sound will be reproduced in the player client. When the player leaves the area, the sound will be fade out until it stops.
+website: https://www.spigotmc.org/members/laviny.1718312/
+depend: [WorldGuard, WorldEdit]
+commands:
+  areasoundevents:
+    description: AreaSoundEvent plugin is the best plugin ever.
+    permission: areasoundevents.admin
+    permission-message: "&cSorry, you don't have permission to do that"
+    aliases:
+      - ase
+      - asound
+      - areasoundevent
+  areasoundeventsprevpage:
+    description: PrevPage action button
+  areasoundeventsnextpage:
+    description: NextPage action button
+

@@ -1,0 +1,56 @@
+# Enable/disable the debug mode
+debug-mode: true
+
+# Enable/disable relevant messages in console an chat
+silent-mode: false
+
+# Set the plugin language from specific yaml, they are loaded
+# from ./lang/es-ES.yml, current translations "en-EN, es-ES"
+language: es-ES
+
+###############################################################
+#####################                  ########################
+################      DEFAULT SETTINGS       ##################
+#####################                  ########################
+###############################################################
+
+# Default properties to set when using commands, those can be
+# applied when all your sounds will be set in a specific source,
+# with a specific volume or pitch for example.
+default-value-settings:
+
+  # Default value of category sound if user does not add it
+  # while creating a new area sound event or entry is incorrect
+  default-sound-category: MUSIC
+
+  # Default value of volume if user does not add it while
+  # creating a new area sound event or the entry is incorrect
+  default-sound-volume: 1.0
+
+  # Default value of pitch if user does not add it while
+  # creating a new area sound event or the entry is incorrect
+  default-sound-pitch: 1.0
+
+  # Default value that the sound will wait until playing from
+  # the moment the player enters the area
+  default-enter-cooldown: 0
+
+  # Default value that the sound will wait until stopping from
+  # the moment the player leaves the area
+  default-leave-cooldown: 0
+
+  # Set the default values for commands permissions if you want
+  # different permissions naming for them
+  default-subcommand-permissions:
+    subcommand-create: areasoundevents.create
+    subcommand-remove: areasoundevents.remove
+    subcommand-reload: areasoundevents.reload
+    subcommand-list: areasoundevents.list
+    subcommand-help: areasoundevents.help
+    subcommand-save: areasoundevents.save
+    subcommand-modify: areasoundevents.modify
+
+  # Set default value for creating a custom flag in WorldGuard.
+  # This flag is used to define in each region, whether the
+  # execution of area sound event is ALLOW or DENY
+  default-worldguard-flag: area-sound-events
