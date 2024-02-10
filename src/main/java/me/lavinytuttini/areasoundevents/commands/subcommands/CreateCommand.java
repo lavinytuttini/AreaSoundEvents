@@ -2,6 +2,10 @@ package me.lavinytuttini.areasoundevents.commands.subcommands;
 
 import me.lavinytuttini.areasoundevents.commands.SubCommand;
 import me.lavinytuttini.areasoundevents.data.RegionData;
+import me.lavinytuttini.areasoundevents.data.config.DefaultSettings;
+import me.lavinytuttini.areasoundevents.data.config.DefaultSubcommandPermissions;
+import me.lavinytuttini.areasoundevents.managers.LocalizationManager;
+import me.lavinytuttini.areasoundevents.settings.ConfigSettings;
 import me.lavinytuttini.areasoundevents.settings.RegionsSettings;
 import me.lavinytuttini.areasoundevents.utils.Utils;
 import org.bukkit.ChatColor;
@@ -12,12 +16,15 @@ import java.util.Map;
 
 public class CreateCommand extends SubCommand {
     private final RegionsSettings regionsSettings = RegionsSettings.getInstance();
+    private final DefaultSettings defaultSettings = ConfigSettings.getInstance().getDefaultSettings();
+    private final DefaultSubcommandPermissions defaultSubcommandPermissions = ConfigSettings.getInstance().getDefaultSubcommandPermissions();
+    private final LocalizationManager localization = LocalizationManager.getInstance();
 
     @Override
     public String getName() { return "create"; }
 
     @Override
-    public String getDescription() { return "Create a new event region"; }
+    public String getDescription() { return localization.getString("commands_create_description"); }
 
     @Override
     public String getSyntax() {
@@ -26,33 +33,44 @@ public class CreateCommand extends SubCommand {
 
     @Override
     public String getPermission() {
-        return "areasoundevents.create";
+        String permission = defaultSubcommandPermissions.getSubcommandCreate();
+        return (!permission.isEmpty()) ? permission : "areasoundevents.create";
     }
 
     @Override
     public void perform(Player player, String[] args) {
-        if (args == null || args.length <= 2) {
-            player.sendMessage(ChatColor.RED + "Sorry, you missed some arguments");
+        if (args == null || args.length < 3) {
+            player.sendMessage(ChatColor.RED + localization.getString("commands_common_missed_arguments"));
             player.sendMessage(ChatColor.YELLOW + "/areasoundsevents " + this.getSyntax());
             return;
         }
 
         String regionName = args[1].toLowerCase();
         String soundName = args[2].toLowerCase();
-        SoundCategory source = (args.length >= 4) ? Utils.processSoundCategoryArgument(args[3]) : SoundCategory.MUSIC; // config.yml -> default-sound-category
-        float volume = (args.length >= 5) ? Utils.parseFloatArgument(args[4]) : 1.0f; // config.yml -> default-sound-volume
-        float pitch = (args.length == 6) ? Utils.parseFloatArgument(args[5]) : 1.0f; // config.yml -> default-sound-pitch
+        SoundCategory source = defaultSettings.getDefaultSoundCategory();
+        float volume = defaultSettings.getDefaultSoundVolume();
+        float pitch = defaultSettings.getDefaultSoundPitch();
+
+        if (args.length >= 4) {
+            source = Utils.processSoundCategoryArgument(args[3]);
+        }
+        if (args.length >= 5) {
+            volume = Utils.parseFloatArgument(args[4]);
+        }
+        if (args.length == 6) {
+            pitch = Utils.parseFloatArgument(args[5]);
+        }
 
         Map<String, RegionData> regionDataMap = regionsSettings.getRegionDataMap();
 
         if (regionDataMap.containsKey(regionName)) {
-            player.sendMessage(ChatColor.RED + "A region with the name '" + regionName + "' already exists.");
+            player.sendMessage(ChatColor.RED + localization.getString("commands_create_region_exists", regionName));
         } else {
             RegionData regionData = new RegionData(regionName, soundName, source, volume, pitch);
             regionDataMap.put(regionData.getName(), regionData);
             regionsSettings.setRegionDataMap(regionDataMap);
 
-            player.sendMessage(ChatColor.GREEN + "You have created a new area sound event");
+            player.sendMessage(ChatColor.GREEN + localization.getString("commands_create_created_region"));
         }
     }
 }

@@ -1,6 +1,7 @@
 package me.lavinytuttini.areasoundevents.commands;
 
 import me.lavinytuttini.areasoundevents.data.PaginationData;
+import me.lavinytuttini.areasoundevents.managers.LocalizationManager;
 import me.lavinytuttini.areasoundevents.utils.Pagination;
 import org.bukkit.ChatColor;
 import org.bukkit.command.Command;
@@ -10,6 +11,7 @@ import org.bukkit.entity.Player;
 import org.jetbrains.annotations.NotNull;
 
 public class PrevPageCommand implements CommandExecutor {
+    private final LocalizationManager localization = LocalizationManager.getInstance();
     @Override
     public boolean onCommand(@NotNull CommandSender sender, @NotNull Command command, @NotNull String label, String[] args) {
         if (sender instanceof Player) {
@@ -19,12 +21,12 @@ public class PrevPageCommand implements CommandExecutor {
 
             if (paginationData.getCurrentPage() > 1) {
                 paginationData.prevPage();
-                Pagination.getInstance().sendPaginatedMessage(player, paginationData.getCurrentPage(), 2);
+                Pagination.getInstance().sendPaginatedMessage(player, paginationData.getCurrentPage());
             } else {
-                player.sendMessage(ChatColor.YELLOW + "You are already on the first page.");
+                player.sendMessage(ChatColor.YELLOW + localization.getString("commands_pagination_in_first_page"));
             }
         } else {
-            sender.sendMessage("This command can only be used by players.");
+            sender.sendMessage(ChatColor.RED + localization.getString("commands_only_player_can_use"));
         }
         return true;
     }
