@@ -1,7 +1,7 @@
 name: AreaSoundEvents
 version: "${project.version}"
 main: me.lavinytuttini.areasoundevents.AreaSoundEvents
-api-version: "1.19"
+api-version: "1.17"
 prefix: "AreaSoundEvents"
 load: STARTUP
 authors: [LavinyTuttini]
@@ -12,7 +12,7 @@ commands:
   areasoundevents:
     description: AreaSoundEvent plugin is the best plugin ever.
     permission: areasoundevents.admin
-    permission-message: "&cSorry, you don't have permission to do that"
+    permission-message: "Sorry, you don't have permission to do that"
     aliases:
       - ase
       - asound

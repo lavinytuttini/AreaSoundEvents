@@ -5,7 +5,6 @@ import org.bukkit.SoundCategory;
 public class PlayerData {
     private String sound;
     private SoundCategory source;
-
     private String region;
 
     public PlayerData(String sound, SoundCategory source, String region) {

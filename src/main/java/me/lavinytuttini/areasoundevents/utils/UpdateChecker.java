@@ -1,7 +1,7 @@
 package me.lavinytuttini.areasoundevents.utils;
 
+import me.lavinytuttini.areasoundevents.AreaSoundEvents;
 import org.bukkit.Bukkit;
-import org.bukkit.plugin.java.JavaPlugin;
 
 import java.io.IOException;
 import java.io.InputStream;
@@ -10,22 +10,22 @@ import java.util.Scanner;
 import java.util.function.Consumer;
 
 public class UpdateChecker {
-    private final JavaPlugin plugin;
+    private final AreaSoundEvents areaSoundEvents;
     private final int resourceId;
 
-    public UpdateChecker(JavaPlugin plugin, int resourceId) {
-        this.plugin = plugin;
+    public UpdateChecker(AreaSoundEvents areaSoundEvents, int resourceId) {
+        this.areaSoundEvents = areaSoundEvents;
         this.resourceId = resourceId;
     }
 
     public void getVersion(final Consumer<String> consumer) {
-        Bukkit.getScheduler().runTaskAsynchronously(this.plugin, () -> {
+        Bukkit.getScheduler().runTaskAsynchronously(this.areaSoundEvents, () -> {
             try (InputStream inputStream = new URL("https://api.spigotmc.org/legacy/update.php?resource=" + this.resourceId).openStream(); Scanner scanner = new Scanner(inputStream)) {
                 if (scanner.hasNext()) {
                     consumer.accept(scanner.next());
                 }
             } catch (IOException exception) {
-                plugin.getLogger().info("Unable to check for updates: " + exception.getMessage());
+                areaSoundEvents.getLogger().info("Unable to check for updates: " + exception.getMessage());
             }
         });
     }

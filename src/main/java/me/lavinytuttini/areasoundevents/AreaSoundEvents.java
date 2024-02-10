@@ -12,7 +12,9 @@ import me.lavinytuttini.areasoundevents.commands.PrevPageCommand;
 import me.lavinytuttini.areasoundevents.listeners.ChatListener;
 import me.lavinytuttini.areasoundevents.listeners.PlayerListeners;
 import me.lavinytuttini.areasoundevents.managers.CommandManager;
+import me.lavinytuttini.areasoundevents.managers.LocalizationManager;
 import me.lavinytuttini.areasoundevents.managers.PluginManager;
+import me.lavinytuttini.areasoundevents.settings.ConfigSettings;
 import me.lavinytuttini.areasoundevents.settings.RegionsSettings;
 import me.lavinytuttini.areasoundevents.utils.ServerVersion;
 import me.lavinytuttini.areasoundevents.utils.UpdateChecker;
@@ -62,7 +64,17 @@ public final class AreaSoundEvents extends JavaPlugin {
 
     @Override
     public void onEnable() {
-        new UpdateChecker(this, 12345).getVersion(version -> {
+        instance = this;
+
+        try {
+            new ConfigSettings(this).loadConfig();
+            LocalizationManager.initialize(this, ConfigSettings.getInstance().getMainSettings().getLanguage());
+            new RegionsSettings(this).load();
+        } catch (IOException e) {
+            getLogger().severe(e.getMessage());
+        }
+
+        new UpdateChecker(this, 114973).getVersion(version -> {
             if (this.getDescription().getVersion().equals(version)) {
                 Bukkit.getConsoleSender().sendMessage(prefix + MessageManager.getColoredMessage("&cThere is not a new update available. &e(&7" + version + "&e)"));
             } else {
@@ -71,17 +83,8 @@ public final class AreaSoundEvents extends JavaPlugin {
             }
         });
 
-        instance = this;
         worldGuardPlugin = PluginManager.setPlugin("WorldGuard", WorldGuardPlugin.class);
         worldEditPlugin = PluginManager.setPlugin("WorldEdit", WorldEditPlugin.class);
-
-        RegionsSettings regionsSettings = RegionsSettings.getInstance();
-
-        try {
-            regionsSettings.load();
-        } catch (IOException e) {
-            getLogger().severe(e.getMessage());
-        }
 
         registerCommands();
         registerEvents();

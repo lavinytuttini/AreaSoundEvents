@@ -1,11 +1,17 @@
 package me.lavinytuttini.areasoundevents.commands.subcommands;
 
 import me.lavinytuttini.areasoundevents.commands.SubCommand;
+import me.lavinytuttini.areasoundevents.data.config.DefaultSubcommandPermissions;
+import me.lavinytuttini.areasoundevents.managers.LocalizationManager;
+import me.lavinytuttini.areasoundevents.settings.ConfigSettings;
 import me.lavinytuttini.areasoundevents.settings.RegionsSettings;
 import org.bukkit.ChatColor;
 import org.bukkit.entity.Player;
 
 public class ReloadCommand extends SubCommand {
+    private final DefaultSubcommandPermissions defaultSubcommandPermissions = ConfigSettings.getInstance().getDefaultSubcommandPermissions();
+    private final LocalizationManager localization = LocalizationManager.getInstance();
+
     @Override
     public String getName() {
         return "reload";
@@ -13,7 +19,7 @@ public class ReloadCommand extends SubCommand {
 
     @Override
     public String getDescription() {
-        return "Reload plugin configuration";
+        return localization.getString("commands_reload_description");
     }
 
     @Override
@@ -23,15 +29,18 @@ public class ReloadCommand extends SubCommand {
 
     @Override
     public String getPermission() {
-        return "areasoundevents.reload";
+        String permission = defaultSubcommandPermissions.getSubcommandHelp();
+        return (!permission.isEmpty()) ? permission : "areasoundevents.reload";
     }
 
     @Override
     public void perform(Player player, String[] args) {
         if (args.length == 1) {
+            ConfigSettings.getInstance().reload(player);
             RegionsSettings.getInstance().reload(player);
+            localization.reload();
         } else {
-            player.sendMessage(ChatColor.RED + "Sorry, you do not need any other argument");
+            player.sendMessage(ChatColor.RED + localization.getString("commands_common_arguments_not_needed"));
             player.sendMessage(ChatColor.YELLOW + "/areasoundsevents " + this.getSyntax());
         }
     }

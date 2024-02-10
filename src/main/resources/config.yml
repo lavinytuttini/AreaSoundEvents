@@ -5,8 +5,8 @@ debug-mode: true
 silent-mode: false
 
 # Set the plugin language from specific yaml, they are loaded
-# from ./lang/es-ES.yml, current translations "en-EN, es-ES"
-language: es-ES
+# from ./loc/es_ES.yml, supported translations "en_EN, es_ES"
+language: en_EN
 
 ###############################################################
 #####################                  ########################
@@ -17,7 +17,7 @@ language: es-ES
 # Default properties to set when using commands, those can be
 # applied when all your sounds will be set in a specific source,
 # with a specific volume or pitch for example.
-default-value-settings:
+default-settings:
 
   # Default value of category sound if user does not add it
   # while creating a new area sound event or entry is incorrect
@@ -50,7 +50,6 @@ default-value-settings:
     subcommand-save: areasoundevents.save
     subcommand-modify: areasoundevents.modify
 
-  # Set default value for creating a custom flag in WorldGuard.
-  # This flag is used to define in each region, whether the
-  # execution of area sound event is ALLOW or DENY
-  default-worldguard-flag: area-sound-events
+  # Default value to define the number of regions to display per
+  # page in the /areasoundevents list command
+  default-list-page-size: 2
