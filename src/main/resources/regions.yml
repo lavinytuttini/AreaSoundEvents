@@ -1,0 +1,6 @@
+regions:
+  areasoundevents:
+    sound: minecraft:music.end
+    source: MUSIC
+    volume: 0.5
+    pitch: 1

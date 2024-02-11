@@ -1,0 +1,55 @@
+# Enable/disable the debug mode
+debug-mode: true
+
+# Enable/disable relevant messages in the chat
+silent-mode: false
+
+# Set the plugin language from specific yaml, they are loaded
+# from ./loc/es_ES.yml, supported translations "en_EN, es_ES"
+language: en_EN
+
+###############################################################
+#####################                  ########################
+################      DEFAULT SETTINGS       ##################
+#####################                  ########################
+###############################################################
+
+# Default properties to set when using commands, those can be
+# applied when all your sounds will be set in a specific source,
+# with a specific volume or pitch for example.
+default-settings:
+
+  # Default value of category sound if user does not add it
+  # while creating a new area sound event or entry is incorrect
+  default-sound-category: MUSIC
+
+  # Default value of volume if user does not add it while
+  # creating a new area sound event or the entry is incorrect
+  default-sound-volume: 1.0
+
+  # Default value of pitch if user does not add it while
+  # creating a new area sound event or the entry is incorrect
+  default-sound-pitch: 1.0
+
+  # (WIP) Default value that the sound will wait until playing from
+  # the moment the player enters the area
+  default-enter-cooldown: 0
+
+  # (WIP) Default value that the sound will wait until stopping from
+  # the moment the player leaves the area
+  default-leave-cooldown: 0
+
+  # Set the default values for commands permissions if you want
+  # different permissions naming for them
+  default-subcommand-permissions:
+    subcommand-create: areasoundevents.create
+    subcommand-remove: areasoundevents.remove
+    subcommand-reload: areasoundevents.reload
+    subcommand-list: areasoundevents.list
+    subcommand-help: areasoundevents.help
+    subcommand-save: areasoundevents.save
+    subcommand-modify: areasoundevents.modify
+
+  # Default value to define the number of regions to display per
+  # page in the /areasoundevents list command
+  default-list-page-size: 2
