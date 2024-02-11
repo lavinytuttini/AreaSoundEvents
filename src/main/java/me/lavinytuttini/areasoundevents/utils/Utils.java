@@ -25,9 +25,7 @@ public class Utils {
         return ServerVersion.valueOf(bukkitName.replace("org.bukkit.craftbukkit.", ""));
     }
 
-    public static Float parseFloatArgument(String arg) {
-        float defaultValue = 1.0f;
-
+    public static Float parseFloatArgument(String arg, float defaultValue) {
         try {
             float floatArg = Float.parseFloat(arg);
             if (floatArg >= 0 && floatArg <= 1) {
@@ -44,14 +42,14 @@ public class Utils {
         return defaultValue;
     }
 
-    public static SoundCategory processSoundCategoryArgument(String value) {
+    public static SoundCategory processSoundCategoryArgument(String value, SoundCategory defaultValue) {
         for (SoundCategory soundCategory : SoundCategory.values()) {
             if (soundCategory.name().equals(value.toUpperCase())) {
                 return soundCategory;
             }
         }
 
-        return SoundCategory.MUSIC;
+        return defaultValue;
     }
 
     public static String getStringProperty(Map<String, Object> properties, String key) {

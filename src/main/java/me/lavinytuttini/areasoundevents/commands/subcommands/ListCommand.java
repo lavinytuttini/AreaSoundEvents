@@ -38,6 +38,11 @@ public class ListCommand extends SubCommand {
     }
 
     @Override
+    public List<String> getContext(String[] args) {
+        return null;
+    }
+
+    @Override
     public String getPermission() {
         String permission = defaultSubcommandPermissions.getSubcommandHelp();
         return (!permission.isEmpty()) ? permission : "areasoundevents.list";

@@ -9,6 +9,8 @@ import me.lavinytuttini.areasoundevents.settings.RegionsSettings;
 import org.bukkit.ChatColor;
 import org.bukkit.entity.Player;
 
+import java.util.ArrayList;
+import java.util.List;
 import java.util.Map;
 
 public class RemoveCommand extends SubCommand {
@@ -35,6 +37,19 @@ public class RemoveCommand extends SubCommand {
     public String getPermission() {
         String permission = defaultSubcommandPermissions.getSubcommandHelp();
         return (!permission.isEmpty()) ? permission : "areasoundevents.remove";
+    }
+
+    @Override
+    public List<String> getContext(String[] args) {
+        List<String> suggestions = new ArrayList<>();
+
+        if (args.length == 2) {
+            for (RegionData region : regionsSettings.getRegionDataMap().values()) {
+                suggestions.add(region.getName());
+            }
+        }
+
+        return suggestions;
     }
 
     @Override

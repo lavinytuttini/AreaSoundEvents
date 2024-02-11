@@ -8,6 +8,8 @@ import me.lavinytuttini.areasoundevents.settings.RegionsSettings;
 import org.bukkit.ChatColor;
 import org.bukkit.entity.Player;
 
+import java.util.List;
+
 public class ReloadCommand extends SubCommand {
     private final DefaultSubcommandPermissions defaultSubcommandPermissions = ConfigSettings.getInstance().getDefaultSubcommandPermissions();
     private final LocalizationManager localization = LocalizationManager.getInstance();
@@ -31,6 +33,11 @@ public class ReloadCommand extends SubCommand {
     public String getPermission() {
         String permission = defaultSubcommandPermissions.getSubcommandHelp();
         return (!permission.isEmpty()) ? permission : "areasoundevents.reload";
+    }
+
+    @Override
+    public List<String> getContext(String[] args) {
+        return null;
     }
 
     @Override

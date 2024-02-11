@@ -17,6 +17,7 @@ commands:
       - ase
       - asound
       - areasoundevent
+    executor: me.lavinytuttini.areasoundevents.managers.CommandManager
   areasoundeventsprevpage:
     description: PrevPage action button
   areasoundeventsnextpage:

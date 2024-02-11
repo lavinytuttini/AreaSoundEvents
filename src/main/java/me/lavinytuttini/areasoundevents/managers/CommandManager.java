@@ -10,23 +10,34 @@ import org.bukkit.ChatColor;
 import org.bukkit.command.Command;
 import org.bukkit.command.CommandExecutor;
 import org.bukkit.command.CommandSender;
+import org.bukkit.command.TabCompleter;
 import org.bukkit.entity.Player;
 import org.jetbrains.annotations.NotNull;
 
-import java.util.ArrayList;
+import java.util.*;
+import java.util.stream.Collectors;
 
-public class CommandManager implements CommandExecutor {
-    private final ArrayList<SubCommand> subcommands = new ArrayList<>();
+public class CommandManager implements CommandExecutor, TabCompleter {
     private final LocalizationManager localization = LocalizationManager.getInstance();
+    private final Map<String, SubCommand> subcommandsMap = new HashMap<>();
 
-    public CommandManager() {
-        subcommands.add(new HelpCommand());
-        subcommands.add(new CreateCommand());
-        subcommands.add(new SaveCommand());
-        subcommands.add(new RemoveCommand());
-        subcommands.add(new ReloadCommand());
-        subcommands.add(new ListCommand());
-        subcommands.add(new ModifyCommand());
+    public CommandManager(AreaSoundEvents areaSoundEvents) {
+        subcommandsMap.put("help", new HelpCommand());
+        subcommandsMap.put("create", new CreateCommand());
+        subcommandsMap.put("save", new SaveCommand());
+        subcommandsMap.put("remove", new RemoveCommand());
+        subcommandsMap.put("reload", new ReloadCommand());
+        subcommandsMap.put("list", new ListCommand());
+        subcommandsMap.put("modify", new ModifyCommand());
+        Objects.requireNonNull(areaSoundEvents.getCommand("areasoundevents")).setTabCompleter(this);
+    }
+
+    public SubCommand getSubCommandByName(String name) {
+        return subcommandsMap.get(name.toLowerCase());
+    }
+
+    public Map<String, SubCommand> getSubcommandsMap() {
+        return subcommandsMap;
     }
 
     @Override
@@ -48,15 +59,14 @@ public class CommandManager implements CommandExecutor {
                 HelpCommand help = new HelpCommand();
                 help.perform(player, args);
             } else {
-                for (int i = 0; i < this.getSubCommands().size(); i++) {
-                    if (args[0].equalsIgnoreCase((this.getSubCommands().get(i).getName()))) {
-                        String subCommandPermission = this.getSubCommands().get(i).getPermission();
+                for (SubCommand subCommand : getSubcommandsMap().values()) {
+                    if (args[0].equalsIgnoreCase(subCommand.getName())) {
+                        String subCommandPermission = subCommand.getPermission();
                         if (player.hasPermission(subCommandPermission) || player.isOp()) {
-                            this.getSubCommands().get(i).perform(player, args);
+                            subCommand.perform(player, args);
                         } else {
                             player.sendMessage(ChatColor.RED + localization.getString("commands_command_not_allowed"));
                         }
-
                         return true;
                     }
                 }
@@ -71,5 +81,33 @@ public class CommandManager implements CommandExecutor {
         return true;
     }
 
-    public ArrayList<SubCommand> getSubCommands() { return subcommands; }
+    @Override
+    public List<String> onTabComplete(@NotNull CommandSender sender, @NotNull Command command, @NotNull String alias, String[] args) {
+        if (!(sender instanceof Player)) {
+            return null;
+        }
+
+        List<String> completions = new ArrayList<>();
+        if (args.length == 1) {
+            completions.addAll(filterSuggestions(subcommandsMap.keySet(), args[args.length - 1]));
+        } else if (args.length >= 2) {
+            String subCommandName = args[0];
+            SubCommand subCommand = getSubCommandByName(subCommandName);
+
+            if (subCommand != null) {
+                List<String> context = subCommand.getContext(args);
+                if (context != null) {
+                    completions.addAll(filterSuggestions(context, args[args.length - 1]));
+                }
+            }
+        }
+
+        return completions;
+    }
+
+    private List<String> filterSuggestions(Collection<String> suggestions, String prefix) {
+        return suggestions.stream()
+                .filter(option -> option.startsWith(prefix))
+                .collect(Collectors.toList());
+    }
 }

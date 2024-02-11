@@ -1,7 +1,7 @@
 # Enable/disable the debug mode
 debug-mode: true
 
-# Enable/disable relevant messages in console an chat
+# Enable/disable relevant messages in the chat
 silent-mode: false
 
 # Set the plugin language from specific yaml, they are loaded
@@ -31,11 +31,11 @@ default-settings:
   # creating a new area sound event or the entry is incorrect
   default-sound-pitch: 1.0
 
-  # Default value that the sound will wait until playing from
+  # (WIP) Default value that the sound will wait until playing from
   # the moment the player enters the area
   default-enter-cooldown: 0
 
-  # Default value that the sound will wait until stopping from
+  # (WIP) Default value that the sound will wait until stopping from
   # the moment the player leaves the area
   default-leave-cooldown: 0
 
