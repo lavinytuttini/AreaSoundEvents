@@ -79,7 +79,7 @@ public final class AreaSoundEvents extends JavaPlugin {
                 Bukkit.getConsoleSender().sendMessage(prefix + MessageManager.getColoredMessage("&cThere is not a new update available. &e(&7" + version + "&e)"));
             } else {
                 Bukkit.getConsoleSender().sendMessage(prefix + MessageManager.getColoredMessage("&cThere is a new version available. &e(&7" + version + "&e)"));
-                Bukkit.getConsoleSender().sendMessage(prefix + MessageManager.getColoredMessage("&cYou can download it at: &ahttps://www.spigotmc.org/resources/12345/"));
+                Bukkit.getConsoleSender().sendMessage(prefix + MessageManager.getColoredMessage("&cYou can download it at: &ahttps://www.spigotmc.org/resources/areasoundevents-create-sound-events-for-minecraft-1-17-1-1-20-4.114973/history"));
             }
         });
 
@@ -100,7 +100,7 @@ public final class AreaSoundEvents extends JavaPlugin {
     }
 
     private void registerCommands() {
-        Objects.requireNonNull(this.getCommand("areasoundevents")).setExecutor(new CommandManager());
+        Objects.requireNonNull(this.getCommand("areasoundevents")).setExecutor(new CommandManager(this));
         Objects.requireNonNull(this.getCommand("areasoundeventsprevpage")).setExecutor(new PrevPageCommand());
         Objects.requireNonNull(this.getCommand("areasoundeventsnextpage")).setExecutor(new NextPageCommand());
     }

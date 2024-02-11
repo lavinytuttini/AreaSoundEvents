@@ -1,6 +1,6 @@
 ﻿commands_pagination_in_first_page: "You are already on the first page."
 commands_only_player_can_use: "This command can only be used by players."
-commands_common_arguments_not_needed: "Sorry, this command does not need any other arguments."
+commands_common_arguments_not_needed: "Sorry, this command does not use any other arguments."
 commands_common_arguments_needed: "Sorry, some arguments are missing."
 commands_common_invalid_arguments: "Invalid arguments:"
 commands_common_missed_arguments: "Sorry, you missed some arguments."

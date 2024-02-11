@@ -35,6 +35,44 @@ public class ModifyCommand extends SubCommand {
     }
 
     @Override
+    public List<String> getContext(String[] args) {
+        List<String> suggestions = new ArrayList<>();
+
+        if (args.length == 2) {
+            for (RegionData region : regionsSettings.getRegionDataMap().values()) {
+                suggestions.add(region.getName());
+            }
+        } else if (args.length >= 3 && args.length < 8) {
+            if (containsParameter(args, "name")) {
+                suggestions.add("name=");
+            }
+            if (containsParameter(args, "sound")) {
+                suggestions.add("sound=");
+            }
+            if (containsParameter(args, "source")) {
+                suggestions.add("source=");
+            }
+            if (containsParameter(args, "volume")) {
+                suggestions.add("volume=");
+            }
+            if (containsParameter(args, "pitch")) {
+                suggestions.add("pitch=");
+            }
+        }
+
+        return suggestions;
+    }
+
+    private boolean containsParameter(String[] args, String parameter) {
+        for (String arg : args) {
+            if (arg.startsWith(parameter + "=")) {
+                return false;
+            }
+        }
+        return true;
+    }
+
+    @Override
     public String getPermission() {
         String permission = defaultSubcommandPermissions.getSubcommandHelp();
         return (!permission.isEmpty()) ? permission : "areasoundevents.modify";
@@ -53,26 +91,55 @@ public class ModifyCommand extends SubCommand {
         if (regionData != null) {
             List<String> invalidArguments = new ArrayList<>();
             for (int i = 2; i < args.length; i++) {
-                switch (args[i].split("=")[0]) {
+                String[] argParts = args[i].split("=");
+                if (argParts.length != 2 || argParts[1].isEmpty()) {
+                    invalidArguments.add(args[i]);
+                    continue;
+                }
+                switch (argParts[0]) {
                     case "name":
-                        String name = args[i].substring(args[i].indexOf("=") + 1);
+                        String name = argParts[1];
                         regionData.setName(name.toLowerCase());
                         break;
                     case "sound":
-                        String sound = args[i].substring(args[i].indexOf("=") + 1);
+                        String sound = argParts[1];
                         regionData.setSound(sound.toLowerCase());
                         break;
                     case "source":
-                        SoundCategory source = Utils.processSoundCategoryArgument(args[i].substring(args[i].indexOf("=") + 1));
-                        regionData.setSource(source);
+                        try {
+                            SoundCategory source = Utils.processSoundCategoryArgument(argParts[1], null);
+                            if (source == null) {
+                                invalidArguments.add(args[i]);
+                            } else {
+                                regionData.setSource(source);
+                            }
+                        } catch (IllegalArgumentException e) {
+                            invalidArguments.add(args[i]);
+                        }
                         break;
                     case "volume":
-                        float volume = Utils.parseFloatArgument(args[i].substring(args[i].indexOf("=") + 1));
-                        regionData.setVolume(volume);
+                        try {
+                            float volume = Float.parseFloat(argParts[1]);
+                            if (volume < 0 || volume > 1) {
+                                invalidArguments.add(args[i]);
+                            } else {
+                                regionData.setVolume(volume);
+                            }
+                        } catch (NumberFormatException e) {
+                            invalidArguments.add(args[i]);
+                        }
                         break;
                     case "pitch":
-                        float pitch = Utils.parseFloatArgument(args[i].substring(args[i].indexOf("=") + 1));
-                        regionData.setPitch(pitch);
+                        try {
+                            float pitch = Float.parseFloat(argParts[1]);
+                            if (pitch < 0 || pitch > 1) {
+                                invalidArguments.add(args[i]);
+                            } else {
+                                regionData.setPitch(pitch);
+                            }
+                        } catch (NumberFormatException e) {
+                            invalidArguments.add(args[i]);
+                        }
                         break;
                     default:
                         invalidArguments.add(args[i]);
@@ -83,9 +150,9 @@ public class ModifyCommand extends SubCommand {
             if (!invalidArguments.isEmpty()) {
                 player.sendMessage(ChatColor.RED + localization.getString("commands_common_invalid_arguments"));
                 for (String invalidArgument : invalidArguments) {
-                    player.sendMessage(ChatColor.YELLOW + " - " + invalidArgument);
+                    player.sendMessage(ChatColor.RED + " - " + invalidArgument);
                 }
-                player.sendMessage(this.getSyntax());
+                player.sendMessage(ChatColor.YELLOW + "/areasoundsevents " + this.getSyntax());
                 return;
             }
 

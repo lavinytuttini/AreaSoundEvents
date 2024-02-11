@@ -9,9 +9,12 @@ import me.lavinytuttini.areasoundevents.settings.ConfigSettings;
 import me.lavinytuttini.areasoundevents.settings.RegionsSettings;
 import me.lavinytuttini.areasoundevents.utils.Utils;
 import org.bukkit.ChatColor;
+import org.bukkit.Sound;
 import org.bukkit.SoundCategory;
 import org.bukkit.entity.Player;
 
+import java.util.ArrayList;
+import java.util.List;
 import java.util.Map;
 
 public class CreateCommand extends SubCommand {
@@ -38,6 +41,29 @@ public class CreateCommand extends SubCommand {
     }
 
     @Override
+    public List<String> getContext(String[] args) {
+        List<String> suggestions = new ArrayList<>();
+
+        if (args.length == 2) {
+            suggestions.add("<region-name>");
+        } else if (args.length == 3) {
+            for (Sound sound : Sound.values()) {
+                suggestions.add(String.valueOf(sound.getKey()));
+            }
+        } else if (args.length == 4) {
+            for (SoundCategory category : SoundCategory.values()) {
+                suggestions.add(category.name().toLowerCase());
+            }
+        } else if (args.length == 5) {
+            suggestions.add("1");
+        } else if (args.length == 6) {
+            suggestions.add("1");
+        }
+
+        return suggestions;
+    }
+
+    @Override
     public void perform(Player player, String[] args) {
         if (args == null || args.length < 3) {
             player.sendMessage(ChatColor.RED + localization.getString("commands_common_missed_arguments"));
@@ -52,13 +78,13 @@ public class CreateCommand extends SubCommand {
         float pitch = defaultSettings.getDefaultSoundPitch();
 
         if (args.length >= 4) {
-            source = Utils.processSoundCategoryArgument(args[3]);
+            source = Utils.processSoundCategoryArgument(args[3], source);
         }
         if (args.length >= 5) {
-            volume = Utils.parseFloatArgument(args[4]);
+            volume = Utils.parseFloatArgument(args[4], volume);
         }
         if (args.length == 6) {
-            pitch = Utils.parseFloatArgument(args[5]);
+            pitch = Utils.parseFloatArgument(args[5], pitch);
         }
 
         Map<String, RegionData> regionDataMap = regionsSettings.getRegionDataMap();
