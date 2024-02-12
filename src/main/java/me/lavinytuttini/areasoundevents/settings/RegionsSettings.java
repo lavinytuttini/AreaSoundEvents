@@ -87,8 +87,10 @@ public class RegionsSettings {
         SoundCategory source = Utils.getEnumProperty(properties, "source", SoundCategory.class, configSettings.getDefaultSettings().getDefaultSoundCategory());
         float volume = Utils.getFloatProperty(properties, "volume", configSettings.getDefaultSettings().getDefaultSoundVolume());
         float pitch = Utils.getFloatProperty(properties, "pitch", configSettings.getDefaultSettings().getDefaultSoundPitch());
+        boolean loop = Utils.getBooleanProperty(properties, "loop", configSettings.getDefaultSettings().isDefaultLoopSound());
+        int loopTime = Utils.getIntegerProperty(properties, "loopTime", configSettings.getDefaultSettings().getDefaultSoundLoopTime());
 
-        RegionData regionData = new RegionData(regionName, sound, source, volume, pitch);
+        RegionData regionData = new RegionData(regionName, sound, source, volume, pitch, loop, loopTime);
 
         regionDataMap.put(regionName, regionData);
 

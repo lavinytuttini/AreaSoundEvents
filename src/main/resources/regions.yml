@@ -4,3 +4,5 @@ regions:
     source: MUSIC
     volume: 0.5
     pitch: 1
+    loop: false
+    loopTime: 60

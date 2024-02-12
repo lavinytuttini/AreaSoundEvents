@@ -141,6 +141,26 @@ public class ModifyCommand extends SubCommand {
                             invalidArguments.add(args[i]);
                         }
                         break;
+                    case "loop":
+                        try {
+                            String loop = argParts[1];
+                            if (loop.equals("false") || loop.equals("true")) {
+                                regionData.setLoop(Boolean.parseBoolean(args[i]));
+                            } else {
+                                invalidArguments.add(args[i]);
+                            }
+                        } catch (NumberFormatException | NullPointerException e) {
+                            invalidArguments.add(args[i]);
+                        }
+                        break;
+                    case "loopTime":
+                        try {
+                            int loopTime = Integer.parseInt(argParts[1]);
+                            regionData.setLoopTime(loopTime);
+                        } catch (NumberFormatException e) {
+                            invalidArguments.add(args[i]);
+                        }
+                        break;
                     default:
                         invalidArguments.add(args[i]);
                         break;

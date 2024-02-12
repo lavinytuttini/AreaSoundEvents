@@ -31,6 +31,16 @@ default-settings:
   # creating a new area sound event or the entry is incorrect
   default-sound-pitch: 1.0
 
+  # Default value for looping the sound, all your new region
+  # creations will have this value to allow loop or not
+  default-loop-sound: false
+
+  # Default value in SECONDS that the loop will reproduce the
+  # sound/music again. I highly recommend values upper 50 or 60,
+  # but is up to you how to use it. Very low values could affect
+  # the performance of your server and have unwanted effects.
+  default-loop-time: 60
+
   # (WIP) Default value that the sound will wait until playing from
   # the moment the player enters the area
   default-enter-cooldown: 0
