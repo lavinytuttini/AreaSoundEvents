@@ -1,5 +1,8 @@
 package me.lavinytuttini.areasoundevents.utils;
 
+import java.util.regex.Matcher;
+import java.util.regex.Pattern;
+
 public enum ServerVersion {
     v1_8_R1,
     v1_8_R2,
@@ -26,7 +29,30 @@ public enum ServerVersion {
     v1_20_R2,
     v1_20_R3;
 
-    public static boolean serverVersionGreaterEqualThan(ServerVersion serverVersion, ServerVersion minServerVersion) {
-        return serverVersion.ordinal() >= minServerVersion.ordinal();
+    private static final Pattern VERSION_PATTERN = Pattern.compile("v(\\d+)_(\\d+)_R(\\d+)");
+
+    public static ServerVersion fromString(String versionString) {
+        Matcher matcher = VERSION_PATTERN.matcher(versionString);
+        if (matcher.matches()) {
+            int major = Integer.parseInt(matcher.group(1));
+            int minor = Integer.parseInt(matcher.group(2));
+            int patch = Integer.parseInt(matcher.group(3));
+
+            String enumName = "v" + major + "_" + minor + "_R" + patch;
+            try {
+                return ServerVersion.valueOf(enumName);
+            } catch (IllegalArgumentException e) {
+                return null;
+            }
+        }
+        return null;
+    }
+
+    public boolean isGreaterThan(ServerVersion other) {
+        return this.ordinal() > other.ordinal();
+    }
+
+    public boolean isGreaterThanOrEqualTo(ServerVersion other) {
+        return this.ordinal() >= other.ordinal();
     }
 }

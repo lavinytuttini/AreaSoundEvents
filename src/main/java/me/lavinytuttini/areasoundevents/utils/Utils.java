@@ -16,7 +16,7 @@ public class Utils {
 
     public static boolean isServerVersionNewerThan(ServerVersion serverVersion) {
         ServerVersion version = AreaSoundEvents.serverVersion;
-        return ServerVersion.serverVersionGreaterEqualThan(version, serverVersion);
+        return version != null && version.isGreaterThanOrEqualTo(serverVersion);
     }
 
     public static String getPrefix() {
