@@ -77,6 +77,8 @@ public class ListCommand extends SubCommand {
         SoundCategory source = regionData.getSource();
         float volume = regionData.getVolume();
         float pitch = regionData.getPitch();
+        boolean loop = regionData.isLoop();
+        int loopTime = regionData.getLoopTime();
 
         ComponentBuilder messageBuilder = new ComponentBuilder();
 
@@ -110,6 +112,14 @@ public class ListCommand extends SubCommand {
                 .color(net.md_5.bungee.api.ChatColor.GREEN)
                 .event(new ClickEvent(ClickEvent.Action.SUGGEST_COMMAND, "/areasoundevents modify " + regionName + " pitch="));
 
+        ComponentBuilder loopButtonBuilder = new ComponentBuilder("Loop:")
+                .color(net.md_5.bungee.api.ChatColor.GREEN)
+                .event(new ClickEvent(ClickEvent.Action.SUGGEST_COMMAND, "/areasoundevents modify " + regionName + " loop="));
+
+        ComponentBuilder loopTimeButtonBuilder = new ComponentBuilder("LoopTime:")
+                .color(net.md_5.bungee.api.ChatColor.GREEN)
+                .event(new ClickEvent(ClickEvent.Action.SUGGEST_COMMAND, "/areasoundevents modify " + regionName + " loopTime="));
+
         messageBuilder.append(regionButtonBuilder.create())
                 .color(net.md_5.bungee.api.ChatColor.GREEN)
                 .append("").reset()
@@ -120,7 +130,9 @@ public class ListCommand extends SubCommand {
         messageBuilder.append(ChatColor.GREEN + " | ").append(soundButtonBuilder.create()).append("").reset().append(ChatColor.WHITE + " " + soundName + "\n");
         messageBuilder.append(ChatColor.GREEN + " | ").append(sourceButtonBuilder.create()).append("").reset().append(ChatColor.WHITE + " " + source + "\n");
         messageBuilder.append(ChatColor.GREEN + " | ").append(volumeButtonBuilder.create()).append("").reset().append(ChatColor.WHITE + " " + volume + "\n");
-        messageBuilder.append(ChatColor.GREEN + " | ").append(pitchButtonBuilder.create()).append("").reset().append(ChatColor.WHITE + " " + pitch);
+        messageBuilder.append(ChatColor.GREEN + " | ").append(pitchButtonBuilder.create()).append("").reset().append(ChatColor.WHITE + " " + pitch + "\n");
+        messageBuilder.append(ChatColor.GREEN + " | ").append(loopButtonBuilder.create()).append("").reset().append(ChatColor.WHITE + " " + loop + "\n");
+        messageBuilder.append(ChatColor.GREEN + " | ").append(loopTimeButtonBuilder.create()).append("").reset().append(ChatColor.WHITE + " " + loopTime);
 
         return messageBuilder.create();
     }

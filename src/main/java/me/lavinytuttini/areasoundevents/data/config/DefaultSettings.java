@@ -9,6 +9,8 @@ public class DefaultSettings {
     private int defaultEnterCooldown;
     private int defaultLeaveCooldown;
     private int defaultListPageSize;
+    private boolean defaultLoopSound;
+    private int defaultSoundLoopTime;
 
     public SoundCategory getDefaultSoundCategory() {
         return defaultSoundCategory;
@@ -56,5 +58,21 @@ public class DefaultSettings {
 
     public void setDefaultListPageSize(int defaultListPageSize) {
         this.defaultListPageSize = defaultListPageSize;
+    }
+
+    public boolean isDefaultLoopSound() {
+        return defaultLoopSound;
+    }
+
+    public void setDefaultLoopSound(boolean defaultLoopSound) {
+        this.defaultLoopSound = defaultLoopSound;
+    }
+
+    public int getDefaultSoundLoopTime() {
+        return defaultSoundLoopTime;
+    }
+
+    public void setDefaultSoundLoopTime(int defaultSoundLoopTime) {
+        this.defaultSoundLoopTime = defaultSoundLoopTime;
     }
 }

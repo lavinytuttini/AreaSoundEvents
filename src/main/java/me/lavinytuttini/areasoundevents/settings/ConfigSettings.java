@@ -72,6 +72,8 @@ public class ConfigSettings {
         setConfigValue(config, pathDefaultSettings + "default-leave-cooldown", Integer.class, Integer::parseInt, defaultSettings::setDefaultLeaveCooldown, 0);
         setConfigValue(config, pathDefaultSettings + "default-sound-category", SoundCategory.class, SoundCategory::valueOf, defaultSettings::setDefaultSoundCategory, SoundCategory.MASTER);
         setConfigValue(config, pathDefaultSettings + "default-list-page-size", Integer.class, Integer::parseInt, defaultSettings::setDefaultListPageSize, 2);
+        setConfigValue(config, pathDefaultSettings + "default-loop-sound", Boolean.class, Boolean::parseBoolean, defaultSettings::setDefaultLoopSound, false);
+        setConfigValue(config, pathDefaultSettings + "default-loop-time", Integer.class, Integer::parseInt, defaultSettings::setDefaultSoundLoopTime, 60);
     }
 
     private void loadDefaultSubcommandPermissions(FileConfiguration config) {

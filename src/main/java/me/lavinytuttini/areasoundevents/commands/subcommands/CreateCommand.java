@@ -55,9 +55,13 @@ public class CreateCommand extends SubCommand {
                 suggestions.add(category.name().toLowerCase());
             }
         } else if (args.length == 5) {
-            suggestions.add("1");
+            suggestions.add("<volume [0.0~1.0]>");
         } else if (args.length == 6) {
-            suggestions.add("1");
+            suggestions.add("<pitch [0.0~1.0]>");
+        } else if (args.length == 7) {
+            suggestions.add("<loop [true/false]>");
+        } else if (args.length == 8) {
+            suggestions.add("<loop-time [Number]>");
         }
 
         return suggestions;
@@ -76,6 +80,8 @@ public class CreateCommand extends SubCommand {
         SoundCategory source = defaultSettings.getDefaultSoundCategory();
         float volume = defaultSettings.getDefaultSoundVolume();
         float pitch = defaultSettings.getDefaultSoundPitch();
+        boolean loop = defaultSettings.isDefaultLoopSound();
+        int loopTime = defaultSettings.getDefaultSoundLoopTime();
 
         if (args.length >= 4) {
             source = Utils.processSoundCategoryArgument(args[3], source);
@@ -83,8 +89,14 @@ public class CreateCommand extends SubCommand {
         if (args.length >= 5) {
             volume = Utils.parseFloatArgument(args[4], volume);
         }
-        if (args.length == 6) {
+        if (args.length >= 6) {
             pitch = Utils.parseFloatArgument(args[5], pitch);
+        }
+        if (args.length >= 7) {
+            loop = Utils.parseBooleanArgument(args[6], loop);
+        }
+        if (args.length == 8) {
+            loopTime = Utils.parseIntegerArgument(args[7], loopTime);
         }
 
         Map<String, RegionData> regionDataMap = regionsSettings.getRegionDataMap();
@@ -92,7 +104,7 @@ public class CreateCommand extends SubCommand {
         if (regionDataMap.containsKey(regionName)) {
             player.sendMessage(ChatColor.RED + localization.getString("commands_create_region_exists", regionName));
         } else {
-            RegionData regionData = new RegionData(regionName, soundName, source, volume, pitch);
+            RegionData regionData = new RegionData(regionName, soundName, source, volume, pitch, loop, loopTime);
             regionDataMap.put(regionData.getName(), regionData);
             regionsSettings.setRegionDataMap(regionDataMap);
 
