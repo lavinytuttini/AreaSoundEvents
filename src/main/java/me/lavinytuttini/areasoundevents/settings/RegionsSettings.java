@@ -83,7 +83,7 @@ public class RegionsSettings {
     }
 
     private void processRegionProperties(String regionName, Map<String, Object> properties) {
-        String sound = Utils.getStringProperty(properties, "sound");
+        String sound = (String) properties.get("sound");
         SoundCategory source = Utils.getEnumProperty(properties, "source", SoundCategory.class, configSettings.getDefaultSettings().getDefaultSoundCategory());
         float volume = Utils.getFloatProperty(properties, "volume", configSettings.getDefaultSettings().getDefaultSoundVolume());
         float pitch = Utils.getFloatProperty(properties, "pitch", configSettings.getDefaultSettings().getDefaultSoundPitch());
