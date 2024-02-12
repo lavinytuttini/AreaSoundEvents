@@ -78,29 +78,43 @@ public class Utils {
     }
 
     public static boolean getBooleanProperty(Map<String, Object> properties, String key, boolean defaultValue) {
-        return getProperty(properties, key, Boolean.class, defaultValue);
+        return getProperty(properties, key, Boolean.class, defaultValue, Boolean.class);
     }
 
     public static Integer getIntegerProperty(Map<String, Object> properties, String key, int defaultValue) {
-        return getProperty(properties, key, Integer.class, defaultValue);
-    }
-
-    public static <T extends Enum<T>> T getEnumProperty(Map<String, Object> properties, String key, Class<T> enumClass, T defaultValue) {
-        return getProperty(properties, key, enumClass, defaultValue);
+        return getProperty(properties, key, Integer.class, defaultValue, Number.class);
     }
 
     public static float getFloatProperty(Map<String, Object> properties, String key, float defaultValue) {
-        return getProperty(properties, key, Float.class, defaultValue);
+        return getProperty(properties, key, Float.class, defaultValue, Number.class);
     }
 
-    private static <T> T getProperty(Map<String, Object> properties, String key, Class<T> type, T defaultValue) {
+    public static <T extends Enum<T>> T getEnumProperty(Map<String, Object> properties, String key, Class<T> enumClass, T defaultValue) {
+        return getProperty(properties, key, enumClass, defaultValue, String.class);
+    }
+
+    public static <T> T getProperty(Map<String, Object> properties, String key, Class<T> type, T defaultValue, Class<?> valueType) {
         Object value = properties.get(key);
-        if (type.isInstance(value)) {
-            return type.cast(value);
-        } else {
-            logValueException(type.getSimpleName(), key, defaultValue);
-            return defaultValue;
+        if (value != null) {
+            if (type == Boolean.class && valueType == Boolean.class && value instanceof Boolean) {
+                return type.cast(value);
+            } else if (type == Integer.class && valueType == Number.class && value instanceof Number) {
+                return type.cast(((Number) value).intValue());
+            } else if (type == Float.class && valueType == Number.class && value instanceof Number) {
+                return type.cast(((Number) value).floatValue());
+            } else if (Enum.class.isAssignableFrom(type) && valueType == String.class && value instanceof String) {
+                @SuppressWarnings("unchecked")
+                Class<? extends Enum<?>> enumType = (Class<? extends Enum<?>>) type;
+                try {
+                    return type.cast(Enum.valueOf(enumType.asSubclass(Enum.class), (String) value));
+                } catch (IllegalArgumentException e) {
+                    logValueException(type.getSimpleName(), key, defaultValue);
+                    return defaultValue;
+                }
+            }
         }
+        logValueException(type.getSimpleName(), key, defaultValue);
+        return defaultValue;
     }
 
     private static void logParsingException(String type, String argument, @Nullable Exception e, Object defaultValue) {
