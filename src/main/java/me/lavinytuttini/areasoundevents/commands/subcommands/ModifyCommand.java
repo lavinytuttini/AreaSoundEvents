@@ -58,6 +58,12 @@ public class ModifyCommand extends SubCommand {
             if (containsParameter(args, "pitch")) {
                 suggestions.add("pitch=");
             }
+            if (containsParameter(args, "loop")) {
+                suggestions.add("loop=");
+            }
+            if (containsParameter(args, "loopTime")) {
+                suggestions.add("loopTime=");
+            }
         }
 
         return suggestions;

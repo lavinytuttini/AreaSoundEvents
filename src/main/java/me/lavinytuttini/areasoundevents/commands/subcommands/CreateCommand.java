@@ -55,13 +55,13 @@ public class CreateCommand extends SubCommand {
                 suggestions.add(category.name().toLowerCase());
             }
         } else if (args.length == 5) {
-            suggestions.add("<volume [0.0~1.0]>");
+            suggestions.add("[volume (0.0~1.0)]>");
         } else if (args.length == 6) {
-            suggestions.add("<pitch [0.0~1.0]>");
+            suggestions.add("[pitch (0.0~1.0)]>");
         } else if (args.length == 7) {
-            suggestions.add("<loop [true/false]>");
+            suggestions.add("[loop (true/false)]>");
         } else if (args.length == 8) {
-            suggestions.add("<loop-time [Number]>");
+            suggestions.add("[loop-time (seconds)]>");
         }
 
         return suggestions;
