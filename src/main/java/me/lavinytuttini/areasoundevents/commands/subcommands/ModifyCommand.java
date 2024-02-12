@@ -148,14 +148,11 @@ public class ModifyCommand extends SubCommand {
                         }
                         break;
                     case "loop":
-                        try {
-                            String loop = argParts[1];
-                            if (loop.equals("false") || loop.equals("true")) {
-                                regionData.setLoop(Boolean.parseBoolean(args[i]));
-                            } else {
-                                invalidArguments.add(args[i]);
-                            }
-                        } catch (NumberFormatException | NullPointerException e) {
+                        if (argParts[1].equalsIgnoreCase("true")) {
+                            regionData.setLoop(true);
+                        } else if (argParts[1].equalsIgnoreCase("false")) {
+                            regionData.setLoop(false);
+                        } else {
                             invalidArguments.add(args[i]);
                         }
                         break;

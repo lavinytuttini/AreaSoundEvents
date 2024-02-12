@@ -85,9 +85,9 @@ public class Utils {
             return true;
         } else if (argument.equalsIgnoreCase("false")) {
             return false;
-        } else {
-            return defaultValue;
         }
+
+        return defaultValue;
     }
 
     public static boolean getBooleanProperty(Map<String, Object> properties, String key, boolean defaultValue) {
