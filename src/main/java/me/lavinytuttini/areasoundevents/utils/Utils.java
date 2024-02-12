@@ -15,7 +15,7 @@ public class Utils {
     private static ServerVersion serverVersion = null;
 
     public static boolean isServerVersionNewerThan(ServerVersion serverVersion) {
-        ServerVersion version = AreaSoundEvents.serverVersion;
+        ServerVersion version = AreaSoundEvents.getServerVersion();
         return version != null && version.isGreaterThanOrEqualTo(serverVersion);
     }
 
@@ -118,12 +118,12 @@ public class Utils {
     }
 
     private static void logParsingException(String type, String argument, @Nullable Exception e, Object defaultValue) {
-        getLogger().warning(AreaSoundEvents.prefix + "Failed to parse " + type + " argument '" + argument + "'. " + Objects.requireNonNull(e).getMessage());
-        getLogger().info(AreaSoundEvents.prefix + "It will be set with a default value: " + defaultValue);
+        getLogger().warning(AreaSoundEvents.getPrefix() + "Failed to parse " + type + " argument '" + argument + "'. " + Objects.requireNonNull(e).getMessage());
+        getLogger().info(AreaSoundEvents.getPrefix() + "It will be set with a default value: " + defaultValue);
     }
 
     private static void logValueException(String valueType, String key, Object defaultValue) {
-        getLogger().warning(AreaSoundEvents.prefix + "'" + key + "' has an invalid or missing value. Expected " + valueType + ".");
-        getLogger().info(AreaSoundEvents.prefix + "'" + key + "' will be set with a default value: " + defaultValue);
+        getLogger().warning(AreaSoundEvents.getPrefix() + "'" + key + "' has an invalid or missing value. Expected " + valueType + ".");
+        getLogger().info(AreaSoundEvents.getPrefix() + "'" + key + "' will be set with a default value: " + defaultValue);
     }
 }

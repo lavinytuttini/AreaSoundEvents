@@ -48,7 +48,7 @@ public class LocalizationManager {
         if (!langFolder.exists()) {
             boolean created = langFolder.mkdirs();
             if (!created) {
-                Bukkit.getConsoleSender().sendMessage(AreaSoundEvents.prefix + "Failed to create lang folder.");
+                Bukkit.getConsoleSender().sendMessage(AreaSoundEvents.getPrefix() + "Failed to create lang folder.");
                 return;
             }
         }
@@ -84,14 +84,14 @@ public class LocalizationManager {
 
     public static LocalizationManager getInstance() {
         if (instance == null) {
-            Bukkit.getConsoleSender().sendMessage( AreaSoundEvents.prefix + "Localization has not been initialized.");
+            Bukkit.getConsoleSender().sendMessage( AreaSoundEvents.getPrefix() + "Localization has not been initialized.");
         }
         return instance;
     }
 
     public static void initialize(AreaSoundEvents areaSoundEvents, String languageCode) {
         if (instance != null) {
-            Bukkit.getConsoleSender().sendMessage( AreaSoundEvents.prefix + "Localization has already been initialized.");
+            Bukkit.getConsoleSender().sendMessage( AreaSoundEvents.getPrefix() + "Localization has already been initialized.");
         }
         instance = new LocalizationManager(areaSoundEvents, languageCode);
     }

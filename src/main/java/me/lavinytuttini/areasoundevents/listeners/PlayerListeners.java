@@ -33,7 +33,6 @@ import java.util.logging.Level;
 import static org.bukkit.Bukkit.getLogger;
 
 public class PlayerListeners implements Listener {
-    AreaSoundEvents areaSoundEvents = AreaSoundEvents.getInstance();
     private final ArrayList<Player> left = new ArrayList<>();
     private final Map<Player, PlayerData> entered = new ConcurrentHashMap<>();
     private final Map<UUID, BukkitTask> runningTasks = new ConcurrentHashMap<>();
@@ -71,7 +70,7 @@ public class PlayerListeners implements Listener {
     }
 
     public void enterRegion(Player player) {
-        LocalPlayer localPlayer = areaSoundEvents.worldGuardPlugin.wrapPlayer(player);
+        LocalPlayer localPlayer = AreaSoundEvents.getWorldGuardPlugin().wrapPlayer(player);
         Location playerLocation = BukkitAdapter.adapt(localPlayer.getLocation());
         RegionContainer container = WorldGuard.getInstance().getPlatform().getRegionContainer();
         RegionQuery query = container.createQuery();
@@ -82,7 +81,7 @@ public class PlayerListeners implements Listener {
                 if (regions.contains(playerLocation.getBlockX(), playerLocation.getBlockY(), playerLocation.getBlockZ())) {
                     try {
                         String regionId = regions.getId();
-                        StateFlag.State state = regions.getFlag(AreaSoundEvents.AREA_SOUND_EVENTS_FLAG);
+                        StateFlag.State state = regions.getFlag(AreaSoundEvents.getAreaSoundEventsFlag());
 
                         if (state == StateFlag.State.ALLOW) {
                             RegionData regionData = RegionsSettings.getInstance().regionDataMap(regionId);

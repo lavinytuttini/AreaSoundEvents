@@ -65,7 +65,7 @@ public class RegionsSettings {
                 Map<String, Map<String, Object>> regionsMap = (Map<String, Map<String, Object>>) dataMap.get("regions");
 
                 if (dataMap.get("regions") == null || regionsMap.isEmpty()) {
-                    Bukkit.getConsoleSender().sendMessage( AreaSoundEvents.prefix + MessageManager.getColoredMessage( "There are no regions within regions.yml. You should create one."));
+                    Bukkit.getConsoleSender().sendMessage( AreaSoundEvents.getPrefix() + MessageManager.getColoredMessage( "There are no regions within regions.yml. You should create one."));
                     return;
                 }
 
@@ -75,7 +75,7 @@ public class RegionsSettings {
                     processRegionProperties(entry.getKey(), regionProperties);
                 }
             } else {
-                getLogger().warning(AreaSoundEvents.prefix + "Missing 'regions' key in the regions.yml file.");
+                getLogger().warning(AreaSoundEvents.getPrefix() + "Missing 'regions' key in the regions.yml file.");
             }
         } catch (IOException e) {
             getLogger().severe(e.getMessage());
@@ -94,7 +94,7 @@ public class RegionsSettings {
 
         regionDataMap.put(regionName, regionData);
 
-        Bukkit.getConsoleSender().sendMessage( AreaSoundEvents.prefix + MessageManager.getColoredMessage("Region '" + regionName + "' has been correctly processed."));
+        Bukkit.getConsoleSender().sendMessage( AreaSoundEvents.getPrefix() + MessageManager.getColoredMessage("Region '" + regionName + "' has been correctly processed."));
     }
 
     public void save(Player player) {
@@ -133,7 +133,7 @@ public class RegionsSettings {
             if (player != null) {
                 player.sendMessage(ChatColor.GREEN + localization.getString("region_settings_successful_save"));
             }
-            Bukkit.getConsoleSender().sendMessage(AreaSoundEvents.prefix + MessageManager.getColoredMessage("&aThe configuration was saved correctly"));
+            Bukkit.getConsoleSender().sendMessage(AreaSoundEvents.getPrefix() + MessageManager.getColoredMessage("&aThe configuration was saved correctly"));
         } catch (Exception e) {
             getLogger().severe(e.getMessage());
         }

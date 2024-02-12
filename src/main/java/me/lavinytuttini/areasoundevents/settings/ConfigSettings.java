@@ -89,7 +89,7 @@ public class ConfigSettings {
 
     private <T> void setConfigValue(FileConfiguration config, String path, Class<T> type, Function<String, T> converter, Consumer<T> setter, T defaultValue) {
         if (!config.isSet(path)) {
-            Bukkit.getConsoleSender().sendMessage(AreaSoundEvents.prefix + MessageManager.getColoredMessage("'" + path + "' is not set in [config.yml]. Using default value."));
+            Bukkit.getConsoleSender().sendMessage(AreaSoundEvents.getPrefix() + MessageManager.getColoredMessage("'" + path + "' is not set in [config.yml]. Using default value."));
             setter.accept(defaultValue);
             return;
         }
@@ -98,7 +98,7 @@ public class ConfigSettings {
             T value = converter.apply(config.getString(path));
             setter.accept(value);
         } catch (IllegalArgumentException e) {
-            Bukkit.getConsoleSender().sendMessage(AreaSoundEvents.prefix + MessageManager.getColoredMessage("Failed to convert value for path '" + path + "' to type " + type.getSimpleName() + ". Using default value."));
+            Bukkit.getConsoleSender().sendMessage(AreaSoundEvents.getPrefix() + MessageManager.getColoredMessage("Failed to convert value for path '" + path + "' to type " + type.getSimpleName() + ". Using default value."));
             setter.accept(defaultValue);
         }
     }

@@ -11,12 +11,12 @@ public class PluginManager {
         Plugin plugin = Bukkit.getPluginManager().getPlugin(pluginName);
 
         if (!(pluginType.isInstance(plugin))) {
-            getLogger().severe(AreaSoundEvents.prefix + MessageManager.getColoredMessage(pluginName + " not found or is not of the correct type! Disabling plugin."));
+            getLogger().severe(AreaSoundEvents.getPrefix() + MessageManager.getColoredMessage(pluginName + " not found or is not of the correct type! Disabling plugin."));
             Bukkit.getPluginManager().disablePlugin(AreaSoundEvents.getInstance());
             return null;
         }
 
-        Bukkit.getConsoleSender().sendMessage(AreaSoundEvents.prefix + MessageManager.getColoredMessage("Plugin '" + pluginName + "' is present."));
+        Bukkit.getConsoleSender().sendMessage(AreaSoundEvents.getPrefix() + MessageManager.getColoredMessage("Plugin '" + pluginName + "' is present."));
         return pluginType.cast(plugin);
     }
 }
