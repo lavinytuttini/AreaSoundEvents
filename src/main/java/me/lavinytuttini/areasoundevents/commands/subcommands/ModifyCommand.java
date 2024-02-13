@@ -1,5 +1,6 @@
 package me.lavinytuttini.areasoundevents.commands.subcommands;
 
+import me.lavinytuttini.areasoundevents.AreaSoundEvents;
 import me.lavinytuttini.areasoundevents.commands.SubCommand;
 import me.lavinytuttini.areasoundevents.data.RegionData;
 import me.lavinytuttini.areasoundevents.data.config.DefaultSubcommandPermissions;
@@ -15,7 +16,7 @@ import java.util.ArrayList;
 import java.util.List;
 
 public class ModifyCommand extends SubCommand {
-    private final RegionsSettings regionsSettings = RegionsSettings.getInstance();
+    private final RegionsSettings regionsSettings = RegionsSettings.getInstance(AreaSoundEvents.getInstance());
     private final DefaultSubcommandPermissions defaultSubcommandPermissions = ConfigSettings.getInstance().getDefaultSubcommandPermissions();
     private final LocalizationManager localization = LocalizationManager.getInstance();
 
@@ -92,96 +93,97 @@ public class ModifyCommand extends SubCommand {
             return;
         }
 
-        RegionData regionData = RegionsSettings.getInstance().regionDataMap(args[1]);
+        RegionData regionData = RegionsSettings.getInstance(AreaSoundEvents.getInstance()).regionDataMap(args[1]);
 
-        if (regionData != null) {
-            List<String> invalidArguments = new ArrayList<>();
-            for (int i = 2; i < args.length; i++) {
-                String[] argParts = args[i].split("=");
-                if (argParts.length != 2 || argParts[1].isEmpty()) {
-                    invalidArguments.add(args[i]);
-                    continue;
-                }
-                switch (argParts[0]) {
-                    case "name":
-                        String name = argParts[1];
-                        regionData.setName(name.toLowerCase());
-                        break;
-                    case "sound":
-                        String sound = argParts[1];
-                        regionData.setSound(sound.toLowerCase());
-                        break;
-                    case "source":
-                        try {
-                            SoundCategory source = Utils.processSoundCategoryArgument(argParts[1], null);
-                            if (source == null) {
-                                invalidArguments.add(args[i]);
-                            } else {
-                                regionData.setSource(source);
-                            }
-                        } catch (IllegalArgumentException e) {
-                            invalidArguments.add(args[i]);
-                        }
-                        break;
-                    case "volume":
-                        try {
-                            float volume = Float.parseFloat(argParts[1]);
-                            if (volume < 0 || volume > 1) {
-                                invalidArguments.add(args[i]);
-                            } else {
-                                regionData.setVolume(volume);
-                            }
-                        } catch (NumberFormatException e) {
-                            invalidArguments.add(args[i]);
-                        }
-                        break;
-                    case "pitch":
-                        try {
-                            float pitch = Float.parseFloat(argParts[1]);
-                            if (pitch < 0 || pitch > 1) {
-                                invalidArguments.add(args[i]);
-                            } else {
-                                regionData.setPitch(pitch);
-                            }
-                        } catch (NumberFormatException e) {
-                            invalidArguments.add(args[i]);
-                        }
-                        break;
-                    case "loop":
-                        if (argParts[1].equalsIgnoreCase("true")) {
-                            regionData.setLoop(true);
-                        } else if (argParts[1].equalsIgnoreCase("false")) {
-                            regionData.setLoop(false);
-                        } else {
-                            invalidArguments.add(args[i]);
-                        }
-                        break;
-                    case "loopTime":
-                        try {
-                            int loopTime = Integer.parseInt(argParts[1]);
-                            regionData.setLoopTime(loopTime);
-                        } catch (NumberFormatException e) {
-                            invalidArguments.add(args[i]);
-                        }
-                        break;
-                    default:
-                        invalidArguments.add(args[i]);
-                        break;
-                }
-            }
-
-            if (!invalidArguments.isEmpty()) {
-                player.sendMessage(ChatColor.RED + localization.getString("commands_common_invalid_arguments"));
-                for (String invalidArgument : invalidArguments) {
-                    player.sendMessage(ChatColor.RED + " - " + invalidArgument);
-                }
-                player.sendMessage(ChatColor.YELLOW + "/areasoundsevents " + this.getSyntax());
-                return;
-            }
-
-            regionsSettings.modify(player, regionData, args[1]);
-        } else {
-            player.sendMessage(ChatColor.RED + localization.getString("commands_common_region_no_exists", args[1]));
+        if (regionData == null) {
+            player.sendMessage(ChatColor.RED + localization.getString("region_settings_common_region_no_exists", args[1]));
+            return;
         }
+
+        List<String> invalidArguments = new ArrayList<>();
+        for (int i = 2; i < args.length; i++) {
+            String[] argParts = args[i].split("=");
+            if (argParts.length != 2 || argParts[1].isEmpty()) {
+                invalidArguments.add(args[i]);
+                continue;
+            }
+            switch (argParts[0]) {
+                case "name":
+                    String name = argParts[1];
+                    regionData.setName(name.toLowerCase());
+                    break;
+                case "sound":
+                    String sound = argParts[1];
+                    regionData.setSound(sound.toLowerCase());
+                    break;
+                case "source":
+                    try {
+                        SoundCategory source = Utils.processSoundCategoryArgument(argParts[1], null);
+                        if (source == null) {
+                            invalidArguments.add(args[i]);
+                        } else {
+                            regionData.setSource(source);
+                        }
+                    } catch (IllegalArgumentException e) {
+                        invalidArguments.add(args[i]);
+                    }
+                    break;
+                case "volume":
+                    try {
+                        float volume = Float.parseFloat(argParts[1]);
+                        if (volume < 0 || volume > 1) {
+                            invalidArguments.add(args[i]);
+                        } else {
+                            regionData.setVolume(volume);
+                        }
+                    } catch (NumberFormatException e) {
+                        invalidArguments.add(args[i]);
+                    }
+                    break;
+                case "pitch":
+                    try {
+                        float pitch = Float.parseFloat(argParts[1]);
+                        if (pitch < 0 || pitch > 1) {
+                            invalidArguments.add(args[i]);
+                        } else {
+                            regionData.setPitch(pitch);
+                        }
+                    } catch (NumberFormatException e) {
+                        invalidArguments.add(args[i]);
+                    }
+                    break;
+                case "loop":
+                    if (argParts[1].equalsIgnoreCase("true")) {
+                        regionData.setLoop(true);
+                    } else if (argParts[1].equalsIgnoreCase("false")) {
+                        regionData.setLoop(false);
+                    } else {
+                        invalidArguments.add(args[i]);
+                    }
+                    break;
+                case "loopTime":
+                    try {
+                        int loopTime = Integer.parseInt(argParts[1]);
+                        regionData.setLoopTime(loopTime);
+                    } catch (NumberFormatException e) {
+                        invalidArguments.add(args[i]);
+                    }
+                    break;
+                default:
+                    invalidArguments.add(args[i]);
+                    break;
+            }
+        }
+
+        if (!invalidArguments.isEmpty()) {
+            player.sendMessage(ChatColor.RED + localization.getString("commands_common_invalid_arguments"));
+            for (String invalidArgument : invalidArguments) {
+                player.sendMessage(ChatColor.RED + " - " + invalidArgument);
+            }
+            player.sendMessage(ChatColor.YELLOW + "/areasoundsevents " + this.getSyntax());
+            return;
+        }
+
+        RegionsSettings.getInstance(AreaSoundEvents.getInstance()).updateRegion(player, args[1], regionData);
     }
 }

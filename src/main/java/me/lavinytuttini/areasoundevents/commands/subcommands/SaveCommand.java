@@ -1,5 +1,6 @@
 package me.lavinytuttini.areasoundevents.commands.subcommands;
 
+import me.lavinytuttini.areasoundevents.AreaSoundEvents;
 import me.lavinytuttini.areasoundevents.commands.SubCommand;
 import me.lavinytuttini.areasoundevents.data.config.DefaultSubcommandPermissions;
 import me.lavinytuttini.areasoundevents.managers.LocalizationManager;
@@ -43,7 +44,7 @@ public class SaveCommand extends SubCommand {
     @Override
     public void perform(Player player, String[] args) {
         if (args.length == 1) {
-            RegionsSettings.getInstance().save(player);
+            RegionsSettings.getInstance(AreaSoundEvents.getInstance()).save(player);
         } else {
             player.sendMessage(ChatColor.RED + localization.getString("commands_common_arguments_not_needed"));
             player.sendMessage(ChatColor.YELLOW + "/areasoundsevents " + this.getSyntax());

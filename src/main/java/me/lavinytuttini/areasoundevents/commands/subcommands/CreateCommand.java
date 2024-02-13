@@ -1,5 +1,6 @@
 package me.lavinytuttini.areasoundevents.commands.subcommands;
 
+import me.lavinytuttini.areasoundevents.AreaSoundEvents;
 import me.lavinytuttini.areasoundevents.commands.SubCommand;
 import me.lavinytuttini.areasoundevents.data.RegionData;
 import me.lavinytuttini.areasoundevents.data.config.DefaultSettings;
@@ -15,10 +16,9 @@ import org.bukkit.entity.Player;
 
 import java.util.ArrayList;
 import java.util.List;
-import java.util.Map;
 
 public class CreateCommand extends SubCommand {
-    private final RegionsSettings regionsSettings = RegionsSettings.getInstance();
+    private final RegionsSettings regionsSettings = RegionsSettings.getInstance(AreaSoundEvents.getInstance());
     private final DefaultSettings defaultSettings = ConfigSettings.getInstance().getDefaultSettings();
     private final DefaultSubcommandPermissions defaultSubcommandPermissions = ConfigSettings.getInstance().getDefaultSubcommandPermissions();
     private final LocalizationManager localization = LocalizationManager.getInstance();
@@ -99,15 +99,15 @@ public class CreateCommand extends SubCommand {
             loopTime = Utils.parseIntegerArgument(args[7], loopTime);
         }
 
-        Map<String, RegionData> regionDataMap = regionsSettings.getRegionDataMap();
+        createRegion(player, regionName, soundName, source, volume, pitch, loop, loopTime);
+    }
 
-        if (regionDataMap.containsKey(regionName)) {
+    public void createRegion(Player player, String regionName, String soundName, SoundCategory source, float volume, float pitch, boolean loop, int loopTime) {
+        if (regionsSettings.getRegionDataMap().containsKey(regionName)) {
             player.sendMessage(ChatColor.RED + localization.getString("commands_create_region_exists", regionName));
         } else {
             RegionData regionData = new RegionData(regionName, soundName, source, volume, pitch, loop, loopTime);
-            regionDataMap.put(regionData.getName(), regionData);
-            regionsSettings.setRegionDataMap(regionDataMap);
-
+            regionsSettings.addRegion(regionName, regionData);
             player.sendMessage(ChatColor.GREEN + localization.getString("commands_create_created_region"));
         }
     }

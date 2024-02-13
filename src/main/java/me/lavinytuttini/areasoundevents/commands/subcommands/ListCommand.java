@@ -1,5 +1,6 @@
 package me.lavinytuttini.areasoundevents.commands.subcommands;
 
+import me.lavinytuttini.areasoundevents.AreaSoundEvents;
 import me.lavinytuttini.areasoundevents.commands.SubCommand;
 import me.lavinytuttini.areasoundevents.data.RegionData;
 import me.lavinytuttini.areasoundevents.data.config.DefaultSubcommandPermissions;
@@ -18,7 +19,7 @@ import java.util.List;
 import java.util.Map;
 
 public class ListCommand extends SubCommand {
-    private final RegionsSettings regionsSettings = RegionsSettings.getInstance();
+    private final RegionsSettings regionsSettings = RegionsSettings.getInstance(AreaSoundEvents.getInstance());
     private final DefaultSubcommandPermissions defaultSubcommandPermissions = ConfigSettings.getInstance().getDefaultSubcommandPermissions();
     private static final LocalizationManager localization = LocalizationManager.getInstance();
 

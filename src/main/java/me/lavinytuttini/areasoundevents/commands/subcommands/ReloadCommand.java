@@ -1,5 +1,6 @@
 package me.lavinytuttini.areasoundevents.commands.subcommands;
 
+import me.lavinytuttini.areasoundevents.AreaSoundEvents;
 import me.lavinytuttini.areasoundevents.commands.SubCommand;
 import me.lavinytuttini.areasoundevents.data.config.DefaultSubcommandPermissions;
 import me.lavinytuttini.areasoundevents.managers.LocalizationManager;
@@ -44,7 +45,7 @@ public class ReloadCommand extends SubCommand {
     public void perform(Player player, String[] args) {
         if (args.length == 1) {
             ConfigSettings.getInstance().reload(player);
-            RegionsSettings.getInstance().reload(player);
+            RegionsSettings.getInstance(AreaSoundEvents.getInstance()).reload(player);
             localization.reload();
         } else {
             player.sendMessage(ChatColor.RED + localization.getString("commands_common_arguments_not_needed"));

@@ -1,5 +1,6 @@
 package me.lavinytuttini.areasoundevents.commands.subcommands;
 
+import me.lavinytuttini.areasoundevents.AreaSoundEvents;
 import me.lavinytuttini.areasoundevents.commands.SubCommand;
 import me.lavinytuttini.areasoundevents.data.RegionData;
 import me.lavinytuttini.areasoundevents.data.config.DefaultSubcommandPermissions;
@@ -11,10 +12,9 @@ import org.bukkit.entity.Player;
 
 import java.util.ArrayList;
 import java.util.List;
-import java.util.Map;
 
 public class RemoveCommand extends SubCommand {
-    private final RegionsSettings regionsSettings = RegionsSettings.getInstance();
+    private final RegionsSettings regionsSettings = RegionsSettings.getInstance(AreaSoundEvents.getInstance());
     private final DefaultSubcommandPermissions defaultSubcommandPermissions = ConfigSettings.getInstance().getDefaultSubcommandPermissions();
     private final LocalizationManager localization = LocalizationManager.getInstance();
 
@@ -61,15 +61,6 @@ public class RemoveCommand extends SubCommand {
         }
 
         String nameRegion = args[1];
-        RegionData regionData = RegionsSettings.getInstance().regionDataMap(nameRegion);
-
-        if (regionData == null) {
-            player.sendMessage(ChatColor.RED + localization.getString("commands_common_region_no_exists", nameRegion));
-        } else {
-            Map<String, RegionData> regionDataMap = regionsSettings.getRegionDataMap();
-            regionDataMap.remove(nameRegion, regionData);
-            regionsSettings.setRegionDataMap(regionDataMap);
-            player.sendMessage(ChatColor.GREEN + localization.getString("commands_remove_removed_region", nameRegion));
-        }
+        RegionsSettings.getInstance(AreaSoundEvents.getInstance()).removeRegion(player, nameRegion);
     }
 }

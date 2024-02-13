@@ -129,7 +129,7 @@ public final class AreaSoundEvents extends JavaPlugin {
     }
 
     private void saveRegionsSettings() {
-        RegionsSettings.getInstance().save(null);
+        RegionsSettings.getInstance(this).save(null);
     }
 
     public static WorldGuardPlugin getWorldGuardPlugin() {

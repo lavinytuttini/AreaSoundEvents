@@ -84,7 +84,7 @@ public class PlayerListeners implements Listener {
                         StateFlag.State state = regions.getFlag(AreaSoundEvents.getAreaSoundEventsFlag());
 
                         if (state == StateFlag.State.ALLOW) {
-                            RegionData regionData = RegionsSettings.getInstance().regionDataMap(regionId);
+                            RegionData regionData = RegionsSettings.getInstance(AreaSoundEvents.getInstance()).regionDataMap(regionId);
 
                             if (regionData != null) {
                                 PlayerData playerData = new PlayerData(regionData.getSound(), regionData.getSource(), regionData.getName());
