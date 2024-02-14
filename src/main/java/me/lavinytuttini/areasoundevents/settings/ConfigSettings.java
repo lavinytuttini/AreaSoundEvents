@@ -4,13 +4,10 @@ import me.lavinytuttini.areasoundevents.AreaSoundEvents;
 import me.lavinytuttini.areasoundevents.data.config.MainSettings;
 import me.lavinytuttini.areasoundevents.data.config.DefaultSettings;
 import me.lavinytuttini.areasoundevents.data.config.DefaultSubcommandPermissions;
-import me.lavinytuttini.areasoundevents.managers.LocalizationManager;
 import me.lavinytuttini.areasoundevents.utils.Prefix;
-import org.bukkit.ChatColor;
 import org.bukkit.SoundCategory;
 import org.bukkit.configuration.file.FileConfiguration;
 import org.bukkit.configuration.file.YamlConfiguration;
-import org.bukkit.entity.Player;
 import org.bukkit.util.Consumer;
 
 import java.io.*;
@@ -25,7 +22,6 @@ public class ConfigSettings {
     private final DefaultSettings defaultSettings;
     private final DefaultSubcommandPermissions defaultSubcommandPermissions;
     private final String prefixConsole;
-    private String prefixPlayerMessage;
 
     public ConfigSettings(AreaSoundEvents areaSoundEvents) {
         instance = this;
@@ -34,7 +30,6 @@ public class ConfigSettings {
         this.defaultSettings = new DefaultSettings();
         this.defaultSubcommandPermissions = new DefaultSubcommandPermissions();
         this.prefixConsole = Prefix.getPrefixConsole();
-        this.prefixPlayerMessage = Prefix.getPrefixPlayerMessage();
     }
 
     public MainSettings getMainSettings() {
@@ -134,24 +129,6 @@ public class ConfigSettings {
         } else {
             throw new IllegalArgumentException(prefixConsole + "Unsupported type: " + type.getSimpleName());
         }
-    }
-
-    // TODO: Move all this part to new ConfigManager that only is used in-game and not in onEnabled plugin
-    public void reload(Player player) {
-        LocalizationManager localization = LocalizationManager.getInstance();
-
-        try {
-            this.loadConfig();
-            player.sendMessage(prefixPlayerMessage + ChatColor.GREEN + localization.getString("config_settings_reloaded"));
-        } catch (IOException e) {
-            getLogger().severe(prefixConsole + "Error reloading config settings: " + e.getMessage());
-            player.sendMessage(prefixPlayerMessage + ChatColor.RED + localization.getString("config_settings_error_reloading"));
-        }
-    }
-
-    // TODO: Move all this part to new ConfigManager that only is used in-game and not in onEnabled plugin
-    public void updatePrefixPlayerMessage(String newPrefixPlayerMessage) {
-        this.prefixPlayerMessage = newPrefixPlayerMessage;
     }
 
     private void logMissingPath(String path) {

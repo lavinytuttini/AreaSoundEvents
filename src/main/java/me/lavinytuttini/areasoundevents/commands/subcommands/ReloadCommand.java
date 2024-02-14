@@ -3,6 +3,7 @@ package me.lavinytuttini.areasoundevents.commands.subcommands;
 import me.lavinytuttini.areasoundevents.AreaSoundEvents;
 import me.lavinytuttini.areasoundevents.commands.SubCommand;
 import me.lavinytuttini.areasoundevents.data.config.DefaultSubcommandPermissions;
+import me.lavinytuttini.areasoundevents.managers.ConfigManager;
 import me.lavinytuttini.areasoundevents.managers.LocalizationManager;
 import me.lavinytuttini.areasoundevents.settings.ConfigSettings;
 import me.lavinytuttini.areasoundevents.settings.RegionsSettings;
@@ -46,7 +47,7 @@ public class ReloadCommand extends SubCommand {
     @Override
     public void perform(Player player, String[] args) {
         if (args.length == 1) {
-            ConfigSettings.getInstance().reload(player);
+            ConfigManager.getInstance().reload(player);
             RegionsSettings.getInstance(AreaSoundEvents.getInstance()).reload(player);
             localization.reload();
         } else {

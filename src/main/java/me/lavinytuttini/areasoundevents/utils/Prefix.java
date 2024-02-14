@@ -1,7 +1,8 @@
 package me.lavinytuttini.areasoundevents.utils;
 
-import me.lavinytuttini.areasoundevents.settings.ConfigSettings;
 import org.bukkit.ChatColor;
+
+import java.util.Objects;
 
 public class Prefix {
     private static final String prefixConsole = "[AreaSoundEvents] ";
@@ -17,13 +18,8 @@ public class Prefix {
     }
 
     public static String getPrefixPlayerMessage() {
-        if (prefixPlayerMessage != null) {
-            ConfigSettings.getInstance().updatePrefixPlayerMessage(prefixPlayerMessage);
-            return prefixPlayerMessage;
-        }
+        return Objects.requireNonNullElse(prefixPlayerMessage, prefixConsole);
 
-        ConfigSettings.getInstance().updatePrefixPlayerMessage(prefixConsole);
-        return prefixConsole;
     }
 
     public static void setPrefixPlayerMessage(String prefixPlayerMessage) {
