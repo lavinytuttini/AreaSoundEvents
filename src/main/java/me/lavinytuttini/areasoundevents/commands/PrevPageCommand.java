@@ -3,6 +3,7 @@ package me.lavinytuttini.areasoundevents.commands;
 import me.lavinytuttini.areasoundevents.data.PaginationData;
 import me.lavinytuttini.areasoundevents.managers.LocalizationManager;
 import me.lavinytuttini.areasoundevents.utils.Pagination;
+import me.lavinytuttini.areasoundevents.utils.Prefix;
 import org.bukkit.ChatColor;
 import org.bukkit.command.Command;
 import org.bukkit.command.CommandExecutor;
@@ -12,6 +13,8 @@ import org.jetbrains.annotations.NotNull;
 
 public class PrevPageCommand implements CommandExecutor {
     private final LocalizationManager localization = LocalizationManager.getInstance();
+    private final String prefixPlayerMessage = Prefix.getPrefixPlayerMessage();
+
     @Override
     public boolean onCommand(@NotNull CommandSender sender, @NotNull Command command, @NotNull String label, String[] args) {
         if (sender instanceof Player) {
@@ -23,10 +26,10 @@ public class PrevPageCommand implements CommandExecutor {
                 paginationData.prevPage();
                 Pagination.getInstance().sendPaginatedMessage(player, paginationData.getCurrentPage());
             } else {
-                player.sendMessage(ChatColor.YELLOW + localization.getString("commands_pagination_in_first_page"));
+                player.sendMessage(prefixPlayerMessage + ChatColor.YELLOW + localization.getString("commands_pagination_in_first_page"));
             }
         } else {
-            sender.sendMessage(ChatColor.RED + localization.getString("commands_only_player_can_use"));
+            sender.sendMessage(prefixPlayerMessage + ChatColor.RED + localization.getString("commands_only_player_can_use"));
         }
         return true;
     }

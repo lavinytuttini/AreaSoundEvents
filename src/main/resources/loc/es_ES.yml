@@ -1,4 +1,5 @@
-﻿commands_pagination_in_first_page: "Ya estás en la primera página."
+﻿prefix: "&8[&bAreaSoundEvents&8] "
+commands_pagination_in_first_page: "Ya estás en la primera página."
 commands_only_player_can_use: "Este comando solo puede ser utilizado por los jugadores."
 commands_common_arguments_not_needed: "Lo siento, este comando no utiliza ningún otro argumento."
 commands_common_arguments_needed: "Lo siento, faltan algunos argumentos."

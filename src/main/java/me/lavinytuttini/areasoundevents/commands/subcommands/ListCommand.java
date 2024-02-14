@@ -8,6 +8,7 @@ import me.lavinytuttini.areasoundevents.managers.LocalizationManager;
 import me.lavinytuttini.areasoundevents.settings.ConfigSettings;
 import me.lavinytuttini.areasoundevents.settings.RegionsSettings;
 import me.lavinytuttini.areasoundevents.utils.Pagination;
+import me.lavinytuttini.areasoundevents.utils.Prefix;
 import net.md_5.bungee.api.chat.*;
 import net.md_5.bungee.api.chat.hover.content.Text;
 import org.bukkit.ChatColor;
@@ -22,6 +23,7 @@ public class ListCommand extends SubCommand {
     private final RegionsSettings regionsSettings = RegionsSettings.getInstance(AreaSoundEvents.getInstance());
     private final DefaultSubcommandPermissions defaultSubcommandPermissions = ConfigSettings.getInstance().getDefaultSubcommandPermissions();
     private static final LocalizationManager localization = LocalizationManager.getInstance();
+    private final String prefixPlayerMessage = Prefix.getPrefixPlayerMessage();
 
     @Override
     public String getName() {
@@ -56,7 +58,7 @@ public class ListCommand extends SubCommand {
 
             List<BaseComponent[]> messageList = new ArrayList<>();
             if (regionDataMap.isEmpty()) {
-                player.sendMessage(ChatColor.YELLOW + localization.getString("commands_list_no_entries_found"));
+                player.sendMessage(prefixPlayerMessage + ChatColor.YELLOW + localization.getString("commands_list_no_entries_found"));
             } else {
                 for (Map.Entry<String, RegionData> entry : regionDataMap.entrySet()) {
                     BaseComponent[] messageComponents = getMessage(entry);
@@ -65,8 +67,8 @@ public class ListCommand extends SubCommand {
                 Pagination.getInstance().init(player, messageList);
             }
         } else {
-            player.sendMessage(ChatColor.RED + localization.getString("commands_common_arguments_not_needed"));
-            player.sendMessage(ChatColor.YELLOW + "/areasoundsevents " + this.getSyntax());
+            player.sendMessage(prefixPlayerMessage + ChatColor.RED + localization.getString("commands_common_arguments_not_needed"));
+            player.sendMessage(prefixPlayerMessage + ChatColor.YELLOW + "/areasoundsevents " + this.getSyntax());
         }
     }
 

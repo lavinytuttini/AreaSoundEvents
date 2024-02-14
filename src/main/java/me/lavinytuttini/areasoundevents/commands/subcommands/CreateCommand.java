@@ -8,6 +8,7 @@ import me.lavinytuttini.areasoundevents.data.config.DefaultSubcommandPermissions
 import me.lavinytuttini.areasoundevents.managers.LocalizationManager;
 import me.lavinytuttini.areasoundevents.settings.ConfigSettings;
 import me.lavinytuttini.areasoundevents.settings.RegionsSettings;
+import me.lavinytuttini.areasoundevents.utils.Prefix;
 import me.lavinytuttini.areasoundevents.utils.Utils;
 import org.bukkit.ChatColor;
 import org.bukkit.Sound;
@@ -22,6 +23,7 @@ public class CreateCommand extends SubCommand {
     private final DefaultSettings defaultSettings = ConfigSettings.getInstance().getDefaultSettings();
     private final DefaultSubcommandPermissions defaultSubcommandPermissions = ConfigSettings.getInstance().getDefaultSubcommandPermissions();
     private final LocalizationManager localization = LocalizationManager.getInstance();
+    private final String prefixPlayerMessage = Prefix.getPrefixPlayerMessage();
 
     @Override
     public String getName() { return "create"; }
@@ -70,8 +72,8 @@ public class CreateCommand extends SubCommand {
     @Override
     public void perform(Player player, String[] args) {
         if (args == null || args.length < 3) {
-            player.sendMessage(ChatColor.RED + localization.getString("commands_common_missed_arguments"));
-            player.sendMessage(ChatColor.YELLOW + "/areasoundsevents " + this.getSyntax());
+            player.sendMessage(prefixPlayerMessage + ChatColor.RED + localization.getString("commands_common_missed_arguments"));
+            player.sendMessage(prefixPlayerMessage + ChatColor.YELLOW + "/areasoundsevents " + this.getSyntax());
             return;
         }
 
@@ -104,11 +106,11 @@ public class CreateCommand extends SubCommand {
 
     public void createRegion(Player player, String regionName, String soundName, SoundCategory source, float volume, float pitch, boolean loop, int loopTime) {
         if (regionsSettings.getRegionDataMap().containsKey(regionName)) {
-            player.sendMessage(ChatColor.RED + localization.getString("commands_create_region_exists", regionName));
+            player.sendMessage(prefixPlayerMessage + ChatColor.RED + localization.getString("commands_create_region_exists", regionName));
         } else {
             RegionData regionData = new RegionData(regionName, soundName, source, volume, pitch, loop, loopTime);
             regionsSettings.addRegion(regionName, regionData);
-            player.sendMessage(ChatColor.GREEN + localization.getString("commands_create_created_region"));
+            player.sendMessage(prefixPlayerMessage + ChatColor.GREEN + localization.getString("commands_create_created_region"));
         }
     }
 }

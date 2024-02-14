@@ -1,5 +1,6 @@
 package me.lavinytuttini.areasoundevents;
 
+import com.sk89q.worldedit.bukkit.WorldEditPlugin;
 import com.sk89q.worldguard.WorldGuard;
 import com.sk89q.worldguard.bukkit.WorldGuardPlugin;
 import com.sk89q.worldguard.protection.flags.Flag;
@@ -15,29 +16,35 @@ import me.lavinytuttini.areasoundevents.managers.LocalizationManager;
 import me.lavinytuttini.areasoundevents.managers.PluginManager;
 import me.lavinytuttini.areasoundevents.settings.ConfigSettings;
 import me.lavinytuttini.areasoundevents.settings.RegionsSettings;
+import me.lavinytuttini.areasoundevents.utils.Prefix;
 import me.lavinytuttini.areasoundevents.utils.ServerVersion;
 import me.lavinytuttini.areasoundevents.utils.UpdateChecker;
 import me.lavinytuttini.areasoundevents.managers.MessageManager;
 import me.lavinytuttini.areasoundevents.utils.Utils;
-import org.bukkit.Bukkit;
 import org.bukkit.plugin.PluginDescriptionFile;
 import org.bukkit.plugin.java.JavaPlugin;
 
 import java.io.IOException;
 import java.util.Objects;
 
+import static org.bukkit.Bukkit.getConsoleSender;
+import static org.bukkit.Bukkit.getPluginManager;
+
 public final class AreaSoundEvents extends JavaPlugin {
     private static AreaSoundEvents instance;
     private ChatListener chatListener;
     private static ServerVersion serverVersion;
-    private static String prefix;
     private static StateFlag AREA_SOUND_EVENTS_FLAG;
     private WorldGuardPlugin worldGuardPlugin;
     private final String pluginVersion;
+    private final String prefixColoredConsole;
+    private final String prefixConsole;
     PluginDescriptionFile pdfFile = this.getDescription();
 
     public AreaSoundEvents() {
         this.pluginVersion = pdfFile.getVersion();
+        prefixColoredConsole = Prefix.getPrefixColoredConsole();
+        prefixConsole = Prefix.getPrefixConsole();
     }
 
     @Override
@@ -49,7 +56,6 @@ public final class AreaSoundEvents extends JavaPlugin {
     public void onEnable() {
         instance = this;
         serverVersion = Utils.getServerVersion();
-        prefix = Utils.getPrefix();
         initializeWorldGuard();
         loadConfigurations();
         checkForUpdates();
@@ -75,27 +81,32 @@ public final class AreaSoundEvents extends JavaPlugin {
             if (existing instanceof StateFlag) {
                 setAreaSoundEventsFlag((StateFlag) existing);
             } else {
-                getLogger().severe("[AreaSoundEvents] Failed to initialize area-sound-events flag. Existing flag is not of type StateFlag.");
+                getLogger().severe(prefixConsole + "Failed to initialize area-sound-events flag. Existing flag is not of type StateFlag.");
                 throw new RuntimeException(e);
             }
         }
     }
 
     private void initializeWorldGuard() {
+        WorldEditPlugin worldEditPlugin = PluginManager.setPlugin("WorldEdit", WorldEditPlugin.class);
         worldGuardPlugin = PluginManager.setPlugin("WorldGuard", WorldGuardPlugin.class);
 
         if (worldGuardPlugin == null) {
-            getLogger().severe("[AreaSoundEvents] WorldGuard plugin not found. Some features may not work correctly.");
+            getLogger().severe(prefixConsole + "WorldGuard plugin not found. Some features may not work correctly.");
+        }
+
+        if (worldEditPlugin == null) {
+            getLogger().severe(prefixConsole + "WorldEdit plugin not found. Some features may not work correctly.");
         }
     }
 
     private void checkForUpdates() {
         new UpdateChecker(this, 114973).getVersion(version -> {
             if (this.getDescription().getVersion().equals(version)) {
-                Bukkit.getConsoleSender().sendMessage(prefix + MessageManager.getColoredMessage("&cThere is not a new update available. &e(&7" + version + "&e)"));
+                getConsoleSender().sendMessage(prefixColoredConsole + MessageManager.getColoredMessage("&cThere is not a new update available. &e(&7" + version + "&e)"));
             } else {
-                Bukkit.getConsoleSender().sendMessage(prefix + MessageManager.getColoredMessage("&cThere is a new version available. &e(&7" + version + "&e)"));
-                Bukkit.getConsoleSender().sendMessage(prefix + MessageManager.getColoredMessage("&cYou can download it at: &ahttps://www.spigotmc.org/resources/areasoundevents-create-sound-events-for-minecraft-1-17-1-1-20-4.114973/history"));
+                getConsoleSender().sendMessage(prefixColoredConsole + MessageManager.getColoredMessage("&cThere is a new version available. &e(&7" + version + "&e)"));
+                getConsoleSender().sendMessage(prefixColoredConsole + MessageManager.getColoredMessage("&cYou can download it at: &ahttps://www.spigotmc.org/resources/areasoundevents-create-sound-events-for-minecraft-1-17-1-1-20-4.114973/history"));
             }
         });
     }
@@ -104,9 +115,10 @@ public final class AreaSoundEvents extends JavaPlugin {
         try {
             new ConfigSettings(this).loadConfig();
             LocalizationManager.initialize(this, ConfigSettings.getInstance().getMainSettings().getLanguage());
+            Prefix.setPrefixPlayerMessage(LocalizationManager.getInstance().getString("prefix"));
             new RegionsSettings(this).load();
         } catch (IOException e) {
-            getLogger().severe("[AreaSoundEvents] Failed to load configuration files. " + e.getMessage());
+            getLogger().severe(prefixConsole + "Failed to load configuration files. " + e.getMessage());
         }
     }
 
@@ -114,18 +126,18 @@ public final class AreaSoundEvents extends JavaPlugin {
         Objects.requireNonNull(this.getCommand("areasoundevents")).setExecutor(new CommandManager(this));
         Objects.requireNonNull(this.getCommand("areasoundeventsprevpage")).setExecutor(new PrevPageCommand());
         Objects.requireNonNull(this.getCommand("areasoundeventsnextpage")).setExecutor(new NextPageCommand());
-        Bukkit.getPluginManager().registerEvents(new PlayerListeners(), this);
+        getPluginManager().registerEvents(new PlayerListeners(), this);
         chatListener = new ChatListener();
-        Bukkit.getPluginManager().registerEvents(chatListener, this);
+        getPluginManager().registerEvents(chatListener, this);
     }
 
     private void printEnableMessage() {
-        Bukkit.getConsoleSender().sendMessage(prefix + MessageManager.getColoredMessage("&eHas been enabled! &fVersion: " + pluginVersion));
-        Bukkit.getConsoleSender().sendMessage(prefix + MessageManager.getColoredMessage("&eThanks for using my plugin!   &f~LavinyTuttini"));
+        getConsoleSender().sendMessage(prefixColoredConsole + MessageManager.getColoredMessage("&eHas been enabled! &fVersion: " + pluginVersion));
+        getConsoleSender().sendMessage(prefixColoredConsole + MessageManager.getColoredMessage("&eThanks for using my plugin!   &f~LavinyTuttini"));
     }
 
     private void printDisableMessage() {
-        Bukkit.getConsoleSender().sendMessage(prefix + MessageManager.getColoredMessage("&eAreaSoundEvents plugin has been disabled!"));
+        getConsoleSender().sendMessage(prefixColoredConsole + MessageManager.getColoredMessage("&eAreaSoundEvents plugin has been disabled!"));
     }
 
     private void saveRegionsSettings() {
@@ -138,10 +150,6 @@ public final class AreaSoundEvents extends JavaPlugin {
 
     public static ServerVersion getServerVersion() {
         return serverVersion;
-    }
-
-    public static String getPrefix() {
-        return prefix;
     }
 
     public static StateFlag getAreaSoundEventsFlag() {

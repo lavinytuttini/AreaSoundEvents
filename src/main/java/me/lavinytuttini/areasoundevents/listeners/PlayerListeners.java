@@ -14,6 +14,7 @@ import me.lavinytuttini.areasoundevents.data.RegionData;
 import me.lavinytuttini.areasoundevents.managers.LocalizationManager;
 import me.lavinytuttini.areasoundevents.settings.ConfigSettings;
 import me.lavinytuttini.areasoundevents.settings.RegionsSettings;
+import me.lavinytuttini.areasoundevents.utils.Prefix;
 import org.bukkit.*;
 import org.bukkit.entity.Player;
 import org.bukkit.event.EventHandler;
@@ -38,6 +39,8 @@ public class PlayerListeners implements Listener {
     private final Map<UUID, BukkitTask> runningTasks = new ConcurrentHashMap<>();
     private final ConfigSettings configSettings = ConfigSettings.getInstance();
     private final LocalizationManager localization = LocalizationManager.getInstance();
+    private final String prefixConsole = Prefix.getPrefixConsole();
+    private final String prefixPlayerMessage = Prefix.getPrefixPlayerMessage();
 
     @EventHandler
     public void quitEvent(PlayerQuitEvent event) {
@@ -55,7 +58,7 @@ public class PlayerListeners implements Listener {
         try {
             enterRegion(player);
         } catch (Exception e) {
-            getLogger().log(Level.SEVERE, "Error handling region entry for player " + player.getName(), e);
+            getLogger().log(Level.SEVERE, prefixConsole + "Error handling region entry for player " + player.getName(), e);
         }
     }
 
@@ -65,7 +68,7 @@ public class PlayerListeners implements Listener {
         try {
             enterRegion(player);
         } catch (Exception e) {
-            getLogger().log(Level.SEVERE, "Error handling region entry for player " + player.getName(), e);
+            getLogger().log(Level.SEVERE, prefixConsole + "Error handling region entry for player " + player.getName(), e);
         }
     }
 
@@ -98,20 +101,19 @@ public class PlayerListeners implements Listener {
                                         runningTasks.put(player.getUniqueId(), soundTask);
                                     }
                                 } else {
-                                    player.stopAllSounds(); // TODO: Only allowed from v1.17.1
                                     // player.stopSound(regionData.getSource()); TODO: Send SoundCategory is only allowed in stopSound method from v1.19.1
-                                    // TODO: Create looping sound: Use considerable tasks as playing a sound repeatedly can consume server resources -> this.runTaskTimer(areaSoundEvents.getInstance(), 0L, 20L);
+                                    player.stopAllSounds(); // TODO: Only allowed from v1.17.1
                                     player.playSound(player.getLocation(), regionData.getSound(), regionData.getSource(), regionData.getVolume(), regionData.getPitch());
                                 }
 
-                                if (!configSettings.getMainSettings().isSilentMode()) {
-                                    player.sendMessage(ChatColor.GREEN + localization.getString("information_player_enters_region", regionData.getName()));
-                                    player.sendMessage(ChatColor.GREEN + localization.getString("information_player_enters_region_sound", regionData.getSound()));
+                                if (configSettings.getMainSettings().isSilentMode()) {
+                                    player.sendMessage(prefixPlayerMessage + ChatColor.GREEN + localization.getString("information_player_enters_region", regionData.getName()));
+                                    player.sendMessage(prefixPlayerMessage + ChatColor.GREEN + localization.getString("information_player_enters_region_sound", regionData.getSound()));
                                 }
                             }
                         }
                     } catch (Exception e) {
-                        getLogger().severe("Error entering region: " + e.getMessage());
+                        getLogger().log(Level.SEVERE, prefixConsole + "Error entering region: ", e);
                     }
                 }
             }
@@ -121,7 +123,7 @@ public class PlayerListeners implements Listener {
         if (!left.contains(player) && entered.get(player) != null && applicableRegionSet.size() == 0) {
             if (applicableRegionSet.size() == 0) {
                 player.stopSound(entered.get(player).getSound(), entered.get(player).getSource());
-                player.sendMessage(ChatColor.RED + localization.getString("information_player_leaves_region", entered.get(player).getRegion()));
+                player.sendMessage(prefixPlayerMessage + ChatColor.RED + localization.getString("information_player_leaves_region", entered.get(player).getRegion()));
 
                 BukkitTask task = runningTasks.remove(player.getUniqueId());
                 if (task != null) {

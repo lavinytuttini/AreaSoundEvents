@@ -1,26 +1,21 @@
 package me.lavinytuttini.areasoundevents.utils;
 
 import me.lavinytuttini.areasoundevents.AreaSoundEvents;
-import me.lavinytuttini.areasoundevents.managers.MessageManager;
-import org.bukkit.Bukkit;
 import org.bukkit.SoundCategory;
 
 import javax.annotation.Nullable;
-import java.util.Map;
-import java.util.Objects;
+import java.util.*;
 
+import static org.bukkit.Bukkit.getServer;
 import static org.bukkit.Bukkit.getLogger;
 
 public class Utils {
     private static ServerVersion serverVersion = null;
+    private static final String prefixConsole = Prefix.getPrefixConsole();
 
     public static boolean isServerVersionNewerThan(ServerVersion serverVersion) {
         ServerVersion version = AreaSoundEvents.getServerVersion();
         return version != null && version.isGreaterThanOrEqualTo(serverVersion);
-    }
-
-    public static String getPrefix() {
-        return MessageManager.getColoredMessage("&8[&bAreaSoundEvents&8] ");
     }
 
     public static ServerVersion getServerVersion() {
@@ -28,7 +23,7 @@ public class Utils {
             return serverVersion;
         }
 
-        String bukkitName = Bukkit.getServer().getClass().getPackage().getName();
+        String bukkitName = getServer().getClass().getPackage().getName();
         serverVersion = ServerVersion.valueOf(bukkitName.replace("org.bukkit.craftbukkit.", ""));
         return serverVersion;
     }
@@ -39,7 +34,7 @@ public class Utils {
             if (floatArg >= 0 && floatArg <= 1) {
                 return floatArg;
             } else {
-                getLogger().warning("Float argument out of range (0~1).");
+                getLogger().warning(prefixConsole + "Float argument out of range (0~1).");
             }
         } catch (NumberFormatException e) {
             logParsingException("Float", argument, e, defaultValue);
@@ -118,12 +113,12 @@ public class Utils {
     }
 
     private static void logParsingException(String type, String argument, @Nullable Exception e, Object defaultValue) {
-        getLogger().warning(AreaSoundEvents.getPrefix() + "Failed to parse " + type + " argument '" + argument + "'. " + Objects.requireNonNull(e).getMessage());
-        getLogger().info(AreaSoundEvents.getPrefix() + "It will be set with a default value: " + defaultValue);
+        getLogger().warning(prefixConsole + "Failed to parse " + type + " argument '" + argument + "'. " + Objects.requireNonNull(e).getMessage());
+        getLogger().info(prefixConsole + "It will be set with a default value: " + defaultValue);
     }
 
     private static void logValueException(String valueType, String key, Object defaultValue) {
-        getLogger().warning(AreaSoundEvents.getPrefix() + "'" + key + "' has an invalid or missing value. Expected " + valueType + ".");
-        getLogger().info(AreaSoundEvents.getPrefix() + "'" + key + "' will be set with a default value: " + defaultValue);
+        getLogger().warning(prefixConsole + "'" + key + "' has an invalid or missing value. Expected " + valueType + ".");
+        getLogger().info(prefixConsole + "'" + key + "' will be set with a default value: " + defaultValue);
     }
 }

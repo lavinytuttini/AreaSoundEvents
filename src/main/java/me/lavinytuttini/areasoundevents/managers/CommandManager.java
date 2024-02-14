@@ -6,6 +6,7 @@ import me.lavinytuttini.areasoundevents.commands.SubCommand;
 import me.lavinytuttini.areasoundevents.commands.subcommands.*;
 import me.lavinytuttini.areasoundevents.listeners.ChatListener;
 import me.lavinytuttini.areasoundevents.settings.ConfigSettings;
+import me.lavinytuttini.areasoundevents.utils.Prefix;
 import org.bukkit.ChatColor;
 import org.bukkit.command.Command;
 import org.bukkit.command.CommandExecutor;
@@ -20,6 +21,7 @@ import java.util.stream.Collectors;
 public class CommandManager implements CommandExecutor, TabCompleter {
     private final LocalizationManager localization = LocalizationManager.getInstance();
     private final Map<String, SubCommand> subcommandsMap = new HashMap<>();
+    private final String prefixPlayerMessage = Prefix.getPrefixPlayerMessage();
 
     public CommandManager(AreaSoundEvents areaSoundEvents) {
         subcommandsMap.put("help", new HelpCommand());
@@ -50,7 +52,7 @@ public class CommandManager implements CommandExecutor, TabCompleter {
 
             String lastCommandLine = chatListener.getLastCommandLine();
             ConfigSettings configSettings = ConfigSettings.getInstance();
-            if (!configSettings.getMainSettings().isSilentMode()) {
+            if (configSettings.getMainSettings().isSilentMode()) {
                 player.sendMessage("");
                 player.sendMessage(lastCommandLine);
             }
@@ -65,17 +67,17 @@ public class CommandManager implements CommandExecutor, TabCompleter {
                         if (player.hasPermission(subCommandPermission) || player.isOp()) {
                             subCommand.perform(player, args);
                         } else {
-                            player.sendMessage(ChatColor.RED + localization.getString("commands_command_not_allowed"));
+                            player.sendMessage(prefixPlayerMessage + ChatColor.RED + localization.getString("commands_command_not_allowed"));
                         }
                         return true;
                     }
                 }
 
-                player.sendMessage(ChatColor.RED + localization.getString("commands_command_invalid"));
-                player.sendMessage(ChatColor.GREEN + "/areasoundevents help");
+                player.sendMessage(prefixPlayerMessage + ChatColor.RED + localization.getString("commands_command_invalid"));
+                player.sendMessage(prefixPlayerMessage + ChatColor.GREEN + "/areasoundevents help");
             }
         } else {
-            sender.sendMessage(ChatColor.YELLOW + localization.getString("commands_only_player_can_use"));
+            sender.sendMessage(prefixPlayerMessage + ChatColor.YELLOW + localization.getString("commands_only_player_can_use"));
         }
 
         return true;

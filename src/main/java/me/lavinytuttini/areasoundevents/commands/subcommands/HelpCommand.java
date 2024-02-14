@@ -6,6 +6,7 @@ import me.lavinytuttini.areasoundevents.data.config.DefaultSubcommandPermissions
 import me.lavinytuttini.areasoundevents.managers.CommandManager;
 import me.lavinytuttini.areasoundevents.managers.LocalizationManager;
 import me.lavinytuttini.areasoundevents.settings.ConfigSettings;
+import me.lavinytuttini.areasoundevents.utils.Prefix;
 import org.bukkit.ChatColor;
 import org.bukkit.entity.Player;
 
@@ -15,6 +16,7 @@ public class HelpCommand extends SubCommand {
     private final DefaultSubcommandPermissions defaultSubcommandPermissions = ConfigSettings.getInstance().getDefaultSubcommandPermissions();
     private final LocalizationManager localization = LocalizationManager.getInstance();
     private final AreaSoundEvents areaSoundEvents = AreaSoundEvents.getInstance();
+    private final String prefixPlayerMessage = Prefix.getPrefixPlayerMessage();
 
     @Override
     public String getName() {
@@ -61,8 +63,8 @@ public class HelpCommand extends SubCommand {
             player.sendMessage(ChatColor.AQUA + "=====================================================");
             player.sendMessage("");
         } else {
-            player.sendMessage(ChatColor.RED + localization.getString("commands_common_arguments_not_needed"));
-            player.sendMessage(ChatColor.YELLOW + "/areasoundsevents " + this.getSyntax());
+            player.sendMessage(prefixPlayerMessage + ChatColor.RED + localization.getString("commands_common_arguments_not_needed"));
+            player.sendMessage(prefixPlayerMessage + ChatColor.YELLOW + "/areasoundsevents " + this.getSyntax());
         }
     }
 }

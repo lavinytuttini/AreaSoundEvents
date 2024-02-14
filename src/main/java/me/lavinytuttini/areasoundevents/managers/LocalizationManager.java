@@ -2,7 +2,7 @@ package me.lavinytuttini.areasoundevents.managers;
 
 import me.lavinytuttini.areasoundevents.AreaSoundEvents;
 import me.lavinytuttini.areasoundevents.settings.ConfigSettings;
-import org.bukkit.Bukkit;
+import me.lavinytuttini.areasoundevents.utils.Prefix;
 import org.yaml.snakeyaml.Yaml;
 
 import java.io.*;
@@ -21,6 +21,7 @@ public class LocalizationManager {
     private final List<String> supportedLocalizations = List.of(
             "en_EN", "es_ES"
     );
+    private static final String prefixConsole = Prefix.getPrefixConsole();
 
     public LocalizationManager(AreaSoundEvents areaSoundEvents, String localizationCode) {
         instance = this;
@@ -32,7 +33,7 @@ public class LocalizationManager {
     public String getString(String key, Object... args) {
         String message = localizedStrings.get(key);
         if (message == null) {
-            return "Missing translation for key: " + key;
+            return prefixConsole + "Missing translation for key: " + key;
         }
         if (args.length > 0) {
             message = String.format(message, args);
@@ -48,7 +49,7 @@ public class LocalizationManager {
         if (!langFolder.exists()) {
             boolean created = langFolder.mkdirs();
             if (!created) {
-                Bukkit.getConsoleSender().sendMessage(AreaSoundEvents.getPrefix() + "Failed to create lang folder.");
+                getLogger().warning(prefixConsole + "Failed to create lang folder.");
                 return;
             }
         }
@@ -68,7 +69,7 @@ public class LocalizationManager {
                 localizedStrings.put(entry.getKey(), entry.getValue().toString());
             }
         } catch (IOException e) {
-            getLogger().severe(e.getMessage());
+            getLogger().severe(prefixConsole + e.getMessage());
         }
     }
 
@@ -84,14 +85,14 @@ public class LocalizationManager {
 
     public static LocalizationManager getInstance() {
         if (instance == null) {
-            Bukkit.getConsoleSender().sendMessage( AreaSoundEvents.getPrefix() + "Localization has not been initialized.");
+            getLogger().warning(prefixConsole + "Localization has not been initialized.");
         }
         return instance;
     }
 
     public static void initialize(AreaSoundEvents areaSoundEvents, String languageCode) {
         if (instance != null) {
-            Bukkit.getConsoleSender().sendMessage( AreaSoundEvents.getPrefix() + "Localization has already been initialized.");
+            getLogger().warning(prefixConsole + "Localization has already been initialized.");
         }
         instance = new LocalizationManager(areaSoundEvents, languageCode);
     }

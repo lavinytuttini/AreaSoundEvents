@@ -5,6 +5,7 @@ import me.lavinytuttini.areasoundevents.data.config.MainSettings;
 import me.lavinytuttini.areasoundevents.data.config.DefaultSettings;
 import me.lavinytuttini.areasoundevents.data.config.DefaultSubcommandPermissions;
 import me.lavinytuttini.areasoundevents.managers.LocalizationManager;
+import me.lavinytuttini.areasoundevents.utils.Prefix;
 import org.bukkit.ChatColor;
 import org.bukkit.SoundCategory;
 import org.bukkit.configuration.file.FileConfiguration;
@@ -12,8 +13,7 @@ import org.bukkit.configuration.file.YamlConfiguration;
 import org.bukkit.entity.Player;
 import org.bukkit.util.Consumer;
 
-import java.io.File;
-import java.io.IOException;
+import java.io.*;
 import java.util.Objects;
 
 import static org.bukkit.Bukkit.getLogger;
@@ -24,6 +24,8 @@ public class ConfigSettings {
     private final MainSettings mainSettings;
     private final DefaultSettings defaultSettings;
     private final DefaultSubcommandPermissions defaultSubcommandPermissions;
+    private final String prefixConsole;
+    private String prefixPlayerMessage;
 
     public ConfigSettings(AreaSoundEvents areaSoundEvents) {
         instance = this;
@@ -31,6 +33,8 @@ public class ConfigSettings {
         this.mainSettings = new MainSettings();
         this.defaultSettings = new DefaultSettings();
         this.defaultSubcommandPermissions = new DefaultSubcommandPermissions();
+        this.prefixConsole = Prefix.getPrefixConsole();
+        this.prefixPlayerMessage = Prefix.getPrefixPlayerMessage();
     }
 
     public MainSettings getMainSettings() {
@@ -51,7 +55,7 @@ public class ConfigSettings {
         try {
             if (!configFile.exists()) {
                 areaSoundEvents.saveResource("config.yml", false);
-                getLogger().info("[AreaSoundEvents] Config file not found, created new config.yml.");
+                getLogger().info( prefixConsole + "Config file not found, created new config.yml.");
             }
 
             FileConfiguration config = YamlConfiguration.loadConfiguration(configFile);
@@ -60,9 +64,9 @@ public class ConfigSettings {
             loadDefaultSettings(config);
             loadDefaultSubcommandPermissions(config);
 
-            getLogger().info("[AreaSoundEvents] Config settings loaded successfully");
+            getLogger().info(prefixConsole + "Config settings loaded successfully");
         } catch (Exception e) {
-            getLogger().severe("[AreaSoundEvents] An unexpected error occurred: " + e.getMessage());
+            getLogger().severe(prefixConsole + "An unexpected error occurred: " + e.getMessage());
         }
     }
 
@@ -128,28 +132,34 @@ public class ConfigSettings {
         } else if (Integer.class.isAssignableFrom(type)) {
             return type.cast(Integer.parseInt(value));
         } else {
-            throw new IllegalArgumentException("[AreaSoundEvents] Unsupported type: " + type.getSimpleName());
+            throw new IllegalArgumentException(prefixConsole + "Unsupported type: " + type.getSimpleName());
         }
     }
 
-    private void logMissingPath(String path) {
-        getLogger().info("[AreaSoundEvents] '" + path + "' is not set in [config.yml]. Using default value.");
-    }
-
-    private void logConversionFailure(String path, String typeName) {
-        getLogger().warning("[AreaSoundEvents] Failed to convert value for path '" + path + "' to type " + typeName + ". Using default value.");
-    }
-
+    // TODO: Move all this part to new ConfigManager that only is used in-game and not in onEnabled plugin
     public void reload(Player player) {
         LocalizationManager localization = LocalizationManager.getInstance();
 
         try {
             this.loadConfig();
-            player.sendMessage(ChatColor.GREEN + localization.getString("config_settings_reloaded"));
+            player.sendMessage(prefixPlayerMessage + ChatColor.GREEN + localization.getString("config_settings_reloaded"));
         } catch (IOException e) {
-            getLogger().severe("[AreaSoundEvents] Error reloading config settings: " + e.getMessage());
-            player.sendMessage(ChatColor.RED + localization.getString("config_settings_error_reloading"));
+            getLogger().severe(prefixConsole + "Error reloading config settings: " + e.getMessage());
+            player.sendMessage(prefixPlayerMessage + ChatColor.RED + localization.getString("config_settings_error_reloading"));
         }
+    }
+
+    // TODO: Move all this part to new ConfigManager that only is used in-game and not in onEnabled plugin
+    public void updatePrefixPlayerMessage(String newPrefixPlayerMessage) {
+        this.prefixPlayerMessage = newPrefixPlayerMessage;
+    }
+
+    private void logMissingPath(String path) {
+        getLogger().info(prefixConsole + "'" + path + "' is not set in [config.yml]. Using default value.");
+    }
+
+    private void logConversionFailure(String path, String typeName) {
+        getLogger().warning(prefixConsole + "Failed to convert value for path '" + path + "' to type " + typeName + ". Using default value.");
     }
 
     public static ConfigSettings getInstance() {

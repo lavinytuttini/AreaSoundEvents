@@ -14,7 +14,7 @@ public class MainSettings {
     }
 
     public boolean isSilentMode() {
-        return silentMode;
+        return !silentMode;
     }
 
     public void setSilentMode(boolean silentMode) {

@@ -7,6 +7,7 @@ import me.lavinytuttini.areasoundevents.data.config.DefaultSubcommandPermissions
 import me.lavinytuttini.areasoundevents.managers.LocalizationManager;
 import me.lavinytuttini.areasoundevents.settings.ConfigSettings;
 import me.lavinytuttini.areasoundevents.settings.RegionsSettings;
+import me.lavinytuttini.areasoundevents.utils.Prefix;
 import me.lavinytuttini.areasoundevents.utils.Utils;
 import org.bukkit.ChatColor;
 import org.bukkit.SoundCategory;
@@ -19,6 +20,7 @@ public class ModifyCommand extends SubCommand {
     private final RegionsSettings regionsSettings = RegionsSettings.getInstance(AreaSoundEvents.getInstance());
     private final DefaultSubcommandPermissions defaultSubcommandPermissions = ConfigSettings.getInstance().getDefaultSubcommandPermissions();
     private final LocalizationManager localization = LocalizationManager.getInstance();
+    private final String prefixPlayerMessage = Prefix.getPrefixPlayerMessage();
 
     @Override
     public String getName() {
@@ -88,15 +90,15 @@ public class ModifyCommand extends SubCommand {
     @Override
     public void perform(Player player, String[] args) {
         if (args == null || args.length <= 2) {
-            player.sendMessage(ChatColor.RED + localization.getString("commands_common_arguments_needed"));
-            player.sendMessage(ChatColor.YELLOW + "/areasoundsevents " + this.getSyntax());
+            player.sendMessage(prefixPlayerMessage + ChatColor.RED + localization.getString("commands_common_arguments_needed"));
+            player.sendMessage(prefixPlayerMessage + ChatColor.YELLOW + "/areasoundsevents " + this.getSyntax());
             return;
         }
 
         RegionData regionData = RegionsSettings.getInstance(AreaSoundEvents.getInstance()).regionDataMap(args[1]);
 
         if (regionData == null) {
-            player.sendMessage(ChatColor.RED + localization.getString("region_settings_common_region_no_exists", args[1]));
+            player.sendMessage(prefixPlayerMessage + ChatColor.RED + localization.getString("region_settings_common_region_no_exists", args[1]));
             return;
         }
 
@@ -176,11 +178,11 @@ public class ModifyCommand extends SubCommand {
         }
 
         if (!invalidArguments.isEmpty()) {
-            player.sendMessage(ChatColor.RED + localization.getString("commands_common_invalid_arguments"));
+            player.sendMessage(prefixPlayerMessage + ChatColor.RED + localization.getString("commands_common_invalid_arguments"));
             for (String invalidArgument : invalidArguments) {
-                player.sendMessage(ChatColor.RED + " - " + invalidArgument);
+                player.sendMessage(prefixPlayerMessage + ChatColor.RED + " - " + invalidArgument);
             }
-            player.sendMessage(ChatColor.YELLOW + "/areasoundsevents " + this.getSyntax());
+            player.sendMessage(prefixPlayerMessage + ChatColor.YELLOW + "/areasoundsevents " + this.getSyntax());
             return;
         }
 

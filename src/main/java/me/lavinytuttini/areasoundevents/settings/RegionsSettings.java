@@ -3,9 +3,8 @@ package me.lavinytuttini.areasoundevents.settings;
 import me.lavinytuttini.areasoundevents.AreaSoundEvents;
 import me.lavinytuttini.areasoundevents.data.RegionData;
 import me.lavinytuttini.areasoundevents.managers.LocalizationManager;
-import me.lavinytuttini.areasoundevents.managers.MessageManager;
+import me.lavinytuttini.areasoundevents.utils.Prefix;
 import me.lavinytuttini.areasoundevents.utils.Utils;
-import org.bukkit.Bukkit;
 import org.bukkit.ChatColor;
 import org.bukkit.SoundCategory;
 import org.bukkit.entity.Player;
@@ -17,6 +16,8 @@ import org.yaml.snakeyaml.representer.Representer;
 import java.io.*;
 import java.util.*;
 
+import static org.bukkit.Bukkit.getLogger;
+
 public class RegionsSettings {
     private static RegionsSettings instance;
     private final AreaSoundEvents areaSoundEvents;
@@ -25,6 +26,8 @@ public class RegionsSettings {
     private final String fileName;
     private final File file;
     private final Map<String, RegionData> regionDataMap;
+    private final String prefixConsole;
+    private final String prefixPlayerMessage;
 
     public RegionsSettings(AreaSoundEvents areaSoundEvents) {
         this.areaSoundEvents = areaSoundEvents;
@@ -33,6 +36,8 @@ public class RegionsSettings {
         this.fileName = "regions.yml";
         this.file = new File(areaSoundEvents.getDataFolder(), fileName);
         this.regionDataMap = new HashMap<>();
+        this.prefixConsole = Prefix.getPrefixConsole();
+        this.prefixPlayerMessage = Prefix.getPrefixPlayerMessage();
         instance = this;
     }
 
@@ -59,18 +64,18 @@ public class RegionsSettings {
         if (regionDataMap.containsKey(regionId)) {
             regionDataMap.remove(regionId);
             regionDataMap.put(regionData.getName(), regionData);
-            player.sendMessage(ChatColor.GREEN + localization.getString("region_settings_successful_modified", regionId));
+            player.sendMessage( prefixPlayerMessage + ChatColor.GREEN + localization.getString("region_settings_successful_modified", regionId));
         } else {
-            player.sendMessage(ChatColor.RED + localization.getString("region_settings_common_region_no_exists", regionId));
+            player.sendMessage(prefixPlayerMessage + ChatColor.RED + localization.getString("region_settings_common_region_no_exists", regionId));
         }
     }
 
     public void removeRegion(Player player, String regionId) {
         if (regionDataMap.containsKey(regionId)) {
             regionDataMap.remove(regionId);
-            player.sendMessage(ChatColor.GREEN + localization.getString("region_settings_removed_region", regionId));
+            player.sendMessage(prefixPlayerMessage + ChatColor.GREEN + localization.getString("region_settings_removed_region", regionId));
         } else {
-            player.sendMessage(ChatColor.RED + localization.getString("region_settings_common_region_no_exists", regionId));
+            player.sendMessage(prefixPlayerMessage + ChatColor.RED + localization.getString("region_settings_common_region_no_exists", regionId));
         }
     }
 
@@ -94,7 +99,7 @@ public class RegionsSettings {
                             Map<String, Object> properties = (Map<String, Object>) value;
                             processRegionProperties(regionId, properties);
                         } else {
-                            Bukkit.getLogger().warning("[AreaSoundEvents] Invalid data for region '" + regionId + "'. Expected a map but we get: " + value);
+                            getLogger().warning( prefixConsole + "Invalid data for region '" + regionId + "'. Expected a map but we get: " + value);
                         }
                     }
                 }
@@ -106,13 +111,13 @@ public class RegionsSettings {
             saveDefaultResource();
             load();
         } catch (IOException e) {
-            Bukkit.getLogger().severe("[AreaSoundEvents] Error loading regions.yml: " + e.getMessage());
+            getLogger().severe(prefixConsole + "Error loading regions.yml: " + e.getMessage());
         }
     }
 
     private void saveDefaultResource() {
         areaSoundEvents.saveResource(fileName, true);
-        Bukkit.getConsoleSender().sendMessage( AreaSoundEvents.getPrefix() + MessageManager.getColoredMessage("Default regions.yml file saved."));
+        getLogger().info(prefixConsole + "Default regions.yml file saved.");
     }
 
     private void processRegionProperties(String regionName, Map<String, Object> properties) {
@@ -127,7 +132,7 @@ public class RegionsSettings {
 
         regionDataMap.put(regionName, regionData);
 
-        Bukkit.getConsoleSender().sendMessage( AreaSoundEvents.getPrefix() + MessageManager.getColoredMessage("Region '" + regionName + "' has been correctly processed."));
+        getLogger().info(prefixConsole + "Region '" + regionName + "' has been correctly processed.");
     }
 
     public void save(Player player) {
@@ -146,13 +151,13 @@ public class RegionsSettings {
             try (FileWriter writer = new FileWriter(file)) {
                 yaml.dump(Collections.singletonMap("regions", getRegionDataMap()), writer);
                 if (player != null) {
-                    player.sendMessage(ChatColor.GREEN + localization.getString("region_settings_successful_save"));
+                    player.sendMessage(prefixPlayerMessage + ChatColor.GREEN + localization.getString("region_settings_successful_save"));
                 }
-                Bukkit.getConsoleSender().sendMessage( AreaSoundEvents.getPrefix() + MessageManager.getColoredMessage("Region settings saved successfully."));
+                getLogger().info(prefixConsole + "Region settings saved successfully.");
             }
         } catch (IOException e) {
-            Objects.requireNonNull(player).sendMessage(ChatColor.RED + localization.getString("region_settings_error_save"));
-            Bukkit.getLogger().severe("Error saving regions.yml: " + e.getMessage());
+            Objects.requireNonNull(player).sendMessage(prefixPlayerMessage + ChatColor.RED + localization.getString("region_settings_error_save"));
+            getLogger().severe( prefixConsole + "Error saving regions.yml: " + e.getMessage());
         }
     }
 
@@ -160,13 +165,13 @@ public class RegionsSettings {
         try {
             load();
             if (player != null) {
-                player.sendMessage(ChatColor.GREEN + localization.getString("region_settings_successful_reload"));
+                player.sendMessage(prefixPlayerMessage + ChatColor.GREEN + localization.getString("region_settings_successful_reload"));
             }
-            Bukkit.getLogger().info("[AreaSoundEvents] Region settings reloaded successfully.");
+            getLogger().info(prefixConsole + "Region settings reloaded successfully.");
         } catch (Exception e) {
-            Bukkit.getLogger().severe("[AreaSoundEvents] Error reloading regions.yml: " + e.getMessage());
+            getLogger().severe(prefixConsole + "Error reloading regions.yml: " + e.getMessage());
             if (player != null) {
-                player.sendMessage(ChatColor.RED + localization.getString("region_settings_error_reload"));
+                player.sendMessage(prefixPlayerMessage + ChatColor.RED + localization.getString("region_settings_error_reload"));
             }
         }
     }
