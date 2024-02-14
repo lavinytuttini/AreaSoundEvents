@@ -75,7 +75,7 @@ public final class AreaSoundEvents extends JavaPlugin {
             if (existing instanceof StateFlag) {
                 setAreaSoundEventsFlag((StateFlag) existing);
             } else {
-                getLogger().severe("Failed to initialize area-sound-events flag. Existing flag is not of type StateFlag.");
+                getLogger().severe("[AreaSoundEvents] Failed to initialize area-sound-events flag. Existing flag is not of type StateFlag.");
                 throw new RuntimeException(e);
             }
         }
@@ -85,7 +85,7 @@ public final class AreaSoundEvents extends JavaPlugin {
         worldGuardPlugin = PluginManager.setPlugin("WorldGuard", WorldGuardPlugin.class);
 
         if (worldGuardPlugin == null) {
-            getLogger().severe("WorldGuard plugin not found. Some features may not work correctly.");
+            getLogger().severe("[AreaSoundEvents] WorldGuard plugin not found. Some features may not work correctly.");
         }
     }
 
@@ -106,7 +106,7 @@ public final class AreaSoundEvents extends JavaPlugin {
             LocalizationManager.initialize(this, ConfigSettings.getInstance().getMainSettings().getLanguage());
             new RegionsSettings(this).load();
         } catch (IOException e) {
-            getLogger().severe("Failed to load configuration files. " + e.getMessage());
+            getLogger().severe("[AreaSoundEvents] Failed to load configuration files. " + e.getMessage());
         }
     }
 
