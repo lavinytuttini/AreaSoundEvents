@@ -59,7 +59,7 @@ public class PlayerListeners implements Listener {
         boolean playerInsideRegion = false;
 
         for (ProtectedRegion region : applicableRegionSet) {
-            if (region.contains(localPlayer.getLocation().getBlockX(), localPlayer.getLocation().getBlockY(), localPlayer.getLocation().getBlockZ())) {
+            if (isPlayerInsideRegion(player, region)) {
                 playerInsideRegion = true;
                 break;
             }
