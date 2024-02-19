@@ -38,7 +38,7 @@ public class CreateCommand extends SubCommand {
     @Override
     public String getPermission() {
         String permission = defaultSubcommandPermissions.getSubcommandCreate();
-        return (!permission.isEmpty()) ? permission : "areasoundevents.create";
+        return !permission.isEmpty() ? permission : "areasoundevents.create";
     }
 
     @Override

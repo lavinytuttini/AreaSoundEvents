@@ -41,30 +41,12 @@ public class ModifyCommand extends SubCommand {
         List<String> suggestions = new ArrayList<>();
 
         if (args.length == 2) {
-            for (RegionData region : regionsSettings.getRegionDataMap().values()) {
-                suggestions.add(region.getName());
-            }
+            suggestions.addAll(regionsSettings.getRegionDataMap().keySet());
         } else if (args.length >= 3 && args.length < 8) {
-            if (containsParameter(args, "name")) {
-                suggestions.add("name=");
-            }
-            if (containsParameter(args, "sound")) {
-                suggestions.add("sound=");
-            }
-            if (containsParameter(args, "source")) {
-                suggestions.add("source=");
-            }
-            if (containsParameter(args, "volume")) {
-                suggestions.add("volume=");
-            }
-            if (containsParameter(args, "pitch")) {
-                suggestions.add("pitch=");
-            }
-            if (containsParameter(args, "loop")) {
-                suggestions.add("loop=");
-            }
-            if (containsParameter(args, "loopTime")) {
-                suggestions.add("loopTime=");
+            for (String parameter : new String[]{"name", "sound", "source", "volume", "pitch", "loop", "loopTime"}) {
+                if (containsParameter(args, parameter)) {
+                    suggestions.add(parameter + "=");
+                }
             }
         }
 
@@ -83,7 +65,7 @@ public class ModifyCommand extends SubCommand {
     @Override
     public String getPermission() {
         String permission = defaultSubcommandPermissions.getSubcommandHelp();
-        return (!permission.isEmpty()) ? permission : "areasoundevents.modify";
+        return !permission.isEmpty() ? permission : "areasoundevents.modify";
     }
 
     @Override
@@ -98,7 +80,7 @@ public class ModifyCommand extends SubCommand {
             return;
         }
 
-        RegionData regionData = RegionsSettings.getInstance(AreaSoundEvents.getInstance()).regionDataMap(args[1]);
+        RegionData regionData = regionsSettings.regionDataMap(args[1]);
 
         if (regionData == null) {
             PlayerMessage.to(player).appendLineFormatted(localization.getString("region_settings_common_region_no_exists"), ChatColor.RED, args[1]).send();
@@ -114,12 +96,10 @@ public class ModifyCommand extends SubCommand {
             }
             switch (argParts[0]) {
                 case "name":
-                    String name = argParts[1];
-                    regionData.setName(name.toLowerCase());
+                    regionData.setName(argParts[1].toLowerCase());
                     break;
                 case "sound":
-                    String sound = argParts[1];
-                    regionData.setSound(sound.toLowerCase());
+                    regionData.setSound(argParts[1].toLowerCase());
                     break;
                 case "source":
                     try {
@@ -134,36 +114,25 @@ public class ModifyCommand extends SubCommand {
                     }
                     break;
                 case "volume":
-                    try {
-                        float volume = Float.parseFloat(argParts[1]);
-                        if (volume < 0 || volume > 1) {
-                            invalidArguments.add(args[i]);
-                        } else {
-                            regionData.setVolume(volume);
-                        }
-                    } catch (NumberFormatException e) {
-                        invalidArguments.add(args[i]);
-                    }
-                    break;
                 case "pitch":
                     try {
-                        float pitch = Float.parseFloat(argParts[1]);
-                        if (pitch < 0 || pitch > 1) {
+                        float value = Float.parseFloat(argParts[1]);
+                        if (value < 0 || value > 1) {
                             invalidArguments.add(args[i]);
+                        } else if (argParts[0].equals("volume")) {
+                            regionData.setVolume(value);
                         } else {
-                            regionData.setPitch(pitch);
+                            regionData.setPitch(value);
                         }
                     } catch (NumberFormatException e) {
                         invalidArguments.add(args[i]);
                     }
                     break;
                 case "loop":
-                    if (argParts[1].equalsIgnoreCase("true")) {
-                        regionData.setLoop(true);
-                    } else if (argParts[1].equalsIgnoreCase("false")) {
-                        regionData.setLoop(false);
-                    } else {
+                    if (!argParts[1].equalsIgnoreCase("true") && !argParts[1].equalsIgnoreCase("false")) {
                         invalidArguments.add(args[i]);
+                    } else {
+                        regionData.setLoop(Boolean.parseBoolean(argParts[1]));
                     }
                     break;
                 case "loopTime":
@@ -182,13 +151,11 @@ public class ModifyCommand extends SubCommand {
 
         if (!invalidArguments.isEmpty()) {
             PlayerMessage.to(player).appendLine(localization.getString("commands_common_invalid_arguments"), ChatColor.RED).send();
-            for (String invalidArgument : invalidArguments) {
-                PlayerMessage.to(player).appendFormatted(" - ", ChatColor.RED).append(invalidArgument, ChatColor.RED).send();
-            }
+            invalidArguments.forEach(invalidArgument -> PlayerMessage.to(player).appendFormatted(" - ", ChatColor.RED).append(invalidArgument, ChatColor.RED).send());
             PlayerMessage.to(player).append("/areasoundevents ", ChatColor.YELLOW).append(this.getSyntax()).send();
             return;
         }
 
-        RegionsSettings.getInstance(AreaSoundEvents.getInstance()).updateRegion(player, args[1], regionData);
+        regionsSettings.updateRegion(player, args[1], regionData);
     }
 }

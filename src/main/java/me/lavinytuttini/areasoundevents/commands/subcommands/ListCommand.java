@@ -47,7 +47,7 @@ public class ListCommand extends SubCommand {
     @Override
     public String getPermission() {
         String permission = defaultSubcommandPermissions.getSubcommandHelp();
-        return (!permission.isEmpty()) ? permission : "areasoundevents.list";
+        return !permission.isEmpty() ? permission : "areasoundevents.list";
     }
 
     @Override
@@ -86,6 +86,7 @@ public class ListCommand extends SubCommand {
         ComponentBuilder modifyButtonBuilder = createButton(
                 localization.getString("commands_list_modify_button"),
                 ChatColor.GREEN,
+                ClickEvent.Action.SUGGEST_COMMAND,
                 "/areasoundevents modify " + regionName,
                 localization.getString("commands_list_tooltip_modify_button") + ChatColor.GOLD + regionName
         );
@@ -93,6 +94,7 @@ public class ListCommand extends SubCommand {
         ComponentBuilder removeButtonBuilder = createButton(
                 localization.getString("commands_list_remove_button"),
                 ChatColor.RED,
+                ClickEvent.Action.RUN_COMMAND,
                 "/areasoundevents remove " + regionName,
                 localization.getString("commands_list_tooltip_remove_button") + ChatColor.GOLD + regionName
         );
@@ -149,10 +151,10 @@ public class ListCommand extends SubCommand {
         return messageBuilder.create();
     }
 
-    private static ComponentBuilder createButton(String buttonText, ChatColor chatColor, String command, String hoverText) {
+    private static ComponentBuilder createButton(String buttonText, ChatColor chatColor, ClickEvent.Action clickEventAction, String command, String hoverText) {
         return new ComponentBuilder(" [" + buttonText + "]")
                 .color(chatColor.asBungee())
-                .event(new ClickEvent(ClickEvent.Action.SUGGEST_COMMAND, command))
+                .event(new ClickEvent(clickEventAction, command))
                 .event(new HoverEvent(HoverEvent.Action.SHOW_TEXT, new Text(hoverText)));
     }
 

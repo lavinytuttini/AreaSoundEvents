@@ -35,7 +35,7 @@ public class HelpCommand extends SubCommand {
     @Override
     public String getPermission() {
         String permission = defaultSubcommandPermissions.getSubcommandHelp();
-        return (!permission.isEmpty()) ? permission : "areasoundevents.help";
+        return !permission.isEmpty() ? permission : "areasoundevents.help";
     }
 
     @Override
