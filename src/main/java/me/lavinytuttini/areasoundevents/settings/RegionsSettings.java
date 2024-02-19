@@ -11,6 +11,8 @@ import org.bukkit.SoundCategory;
 import org.bukkit.entity.Player;
 import org.yaml.snakeyaml.DumperOptions;
 import org.yaml.snakeyaml.Yaml;
+import org.yaml.snakeyaml.introspector.Property;
+import org.yaml.snakeyaml.nodes.NodeTuple;
 import org.yaml.snakeyaml.nodes.Tag;
 import org.yaml.snakeyaml.representer.Representer;
 
@@ -139,7 +141,7 @@ public class RegionsSettings {
             DumperOptions dumperOptions = new DumperOptions();
             dumperOptions.setPrettyFlow(true);
             dumperOptions.setDefaultFlowStyle(DumperOptions.FlowStyle.BLOCK);
-            Representer representer = new Representer(dumperOptions);
+            Representer representer = new CustomRepresenter(dumperOptions);
             representer.addClassTag(RegionData.class, Tag.MAP);
 
             if (!file.exists()) {
@@ -172,6 +174,21 @@ public class RegionsSettings {
             if (player != null) {
                 PlayerMessage.to(player).appendLine(localization.getString("region_settings_error_reload"), ChatColor.RED).send();
             }
+        }
+    }
+
+    static class CustomRepresenter extends Representer {
+        CustomRepresenter(DumperOptions options) {
+            super(options);
+            this.addClassTag(RegionData.class, Tag.MAP);
+        }
+
+        @Override
+        protected NodeTuple representJavaBeanProperty(Object javaBean, Property property, Object propertyValue, Tag customTag) {
+            if ("name".equals(property.getName())) {
+                return null;
+            }
+            return super.representJavaBeanProperty(javaBean, property, propertyValue, customTag);
         }
     }
 }
