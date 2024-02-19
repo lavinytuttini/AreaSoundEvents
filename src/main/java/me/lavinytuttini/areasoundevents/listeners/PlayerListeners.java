@@ -14,6 +14,7 @@ import me.lavinytuttini.areasoundevents.data.RegionData;
 import me.lavinytuttini.areasoundevents.managers.LocalizationManager;
 import me.lavinytuttini.areasoundevents.settings.ConfigSettings;
 import me.lavinytuttini.areasoundevents.settings.RegionsSettings;
+import me.lavinytuttini.areasoundevents.utils.PlayerMessage;
 import org.bukkit.*;
 import org.bukkit.entity.Player;
 import org.bukkit.event.EventHandler;
@@ -24,17 +25,10 @@ import org.bukkit.event.player.PlayerQuitEvent;
 import org.bukkit.scheduler.BukkitRunnable;
 import org.bukkit.scheduler.BukkitTask;
 
-import java.util.ArrayList;
-import java.util.Map;
-import java.util.UUID;
+import java.util.*;
 import java.util.concurrent.ConcurrentHashMap;
-import java.util.logging.Level;
-
-import static org.bukkit.Bukkit.getLogger;
 
 public class PlayerListeners implements Listener {
-    AreaSoundEvents areaSoundEvents = AreaSoundEvents.getInstance();
-    private final ArrayList<Player> left = new ArrayList<>();
     private final Map<Player, PlayerData> entered = new ConcurrentHashMap<>();
     private final Map<UUID, BukkitTask> runningTasks = new ConcurrentHashMap<>();
     private final ConfigSettings configSettings = ConfigSettings.getInstance();
@@ -43,95 +37,131 @@ public class PlayerListeners implements Listener {
     @EventHandler
     public void quitEvent(PlayerQuitEvent event) {
         Player player = event.getPlayer();
-
-        if (entered.containsKey(player) || left.contains(player)) {
-            entered.remove(player);
-            left.remove(player);
-        }
+        entered.remove(player);
     }
 
     @EventHandler
     public void joinEvent(PlayerJoinEvent event) {
         Player player = event.getPlayer();
-        try {
-            enterRegion(player);
-        } catch (Exception e) {
-            getLogger().log(Level.SEVERE, "Error handling region entry for player " + player.getName(), e);
-        }
+        enterRegion(player);
     }
 
     @EventHandler
     public void moveEvent(PlayerMoveEvent event) {
         Player player = event.getPlayer();
-        try {
-            enterRegion(player);
-        } catch (Exception e) {
-            getLogger().log(Level.SEVERE, "Error handling region entry for player " + player.getName(), e);
+        enterRegion(player);
+    }
+
+    private void enterRegion(Player player) {
+        LocalPlayer localPlayer = AreaSoundEvents.getWorldGuardPlugin().wrapPlayer(player);
+        ApplicableRegionSet applicableRegionSet = getRegionsAtPlayerLocation(localPlayer);
+        boolean playerInsideRegion = false;
+
+        for (ProtectedRegion region : applicableRegionSet) {
+            if (isPlayerInsideRegion(player, region)) {
+                playerInsideRegion = true;
+                break;
+            }
+        }
+
+        if (playerInsideRegion) {
+            if (!entered.containsKey(player)) {
+                RegionData regionData = getRegionDataForPlayer(player, applicableRegionSet);
+                if (regionData != null) {
+
+                    PlayerData playerData = new PlayerData(regionData.getSound(), regionData.getSource(), regionData.getName());
+                    entered.put(player, playerData);
+
+                    if (regionData.isLoop()) {
+                        startLoopingSoundTask(player, regionData);
+                    } else {
+                        playSoundForPlayer(player, regionData);
+                    }
+
+                    if (configSettings.getMainSettings().isSilentMode()) {
+                        PlayerMessage.to(player)
+                                .appendLineFormatted(localization.getString("information_player_enters_region"), ChatColor.GREEN, regionData.getName())
+                                .appendNewLine()
+                                .appendFormatted(localization.getString("information_player_enters_region_sound"), ChatColor.GREEN, regionData.getSound())
+                                .send();
+                    }
+                }
+            }
+        } else {
+            if (entered.containsKey(player)) {
+                if (configSettings.getMainSettings().isSilentMode())
+                    PlayerMessage.to(player).appendLineFormatted(localization.getString("information_player_leaves_region"), ChatColor.RED, entered.get(player).getRegion()).send();
+
+                cancelLoopingSoundTask(player);
+                stopSoundForPlayer(player, entered.get(player));
+                entered.remove(player);
+            }
         }
     }
 
-    public void enterRegion(Player player) {
-        LocalPlayer localPlayer = areaSoundEvents.worldGuardPlugin.wrapPlayer(player);
+    private boolean isPlayerInsideRegion(Player player, ProtectedRegion region) {
+        Location playerLocation = player.getLocation();
+
+        int x = playerLocation.getBlockX();
+        int y = playerLocation.getBlockY();
+        int z = playerLocation.getBlockZ();
+
+        return region.contains(x, y, z);
+    }
+
+    private ApplicableRegionSet getRegionsAtPlayerLocation(LocalPlayer localPlayer) {
         Location playerLocation = BukkitAdapter.adapt(localPlayer.getLocation());
         RegionContainer container = WorldGuard.getInstance().getPlatform().getRegionContainer();
         RegionQuery query = container.createQuery();
-        ApplicableRegionSet applicableRegionSet = query.getApplicableRegions(BukkitAdapter.adapt(playerLocation));
+        return query.getApplicableRegions(BukkitAdapter.adapt(playerLocation));
+    }
 
-        if (!entered.containsKey(player)) {
-            for (ProtectedRegion regions : applicableRegionSet) {
-                if (regions.contains(playerLocation.getBlockX(), playerLocation.getBlockY(), playerLocation.getBlockZ())) {
-                    try {
-                        String regionId = regions.getId();
-                        StateFlag.State state = regions.getFlag(AreaSoundEvents.AREA_SOUND_EVENTS_FLAG);
-
-                        if (state == StateFlag.State.ALLOW) {
-                            RegionData regionData = RegionsSettings.getInstance().regionDataMap(regionId);
-
-                            if (regionData != null) {
-                                PlayerData playerData = new PlayerData(regionData.getSound(), regionData.getSource(), regionData.getName());
-                                left.remove(player);
-                                entered.put(player, playerData);
-
-                                if (regionData.isLoop()) {
-                                    BukkitTask soundTask = runningTasks.get(player.getUniqueId());
-                                    if (soundTask == null || soundTask.isCancelled()) {
-                                        soundTask = createLoopingSoundTask(player, regionData);
-                                        runningTasks.put(player.getUniqueId(), soundTask);
-                                    }
-                                } else {
-                                    player.stopAllSounds(); // TODO: Only allowed from v1.17.1
-                                    // player.stopSound(regionData.getSource()); TODO: Send SoundCategory is only allowed in stopSound method from v1.19.1
-                                    // TODO: Create looping sound: Use considerable tasks as playing a sound repeatedly can consume server resources -> this.runTaskTimer(areaSoundEvents.getInstance(), 0L, 20L);
-                                    player.playSound(player.getLocation(), regionData.getSound(), regionData.getSource(), regionData.getVolume(), regionData.getPitch());
-                                }
-
-                                if (!configSettings.getMainSettings().isSilentMode()) {
-                                    player.sendMessage(ChatColor.GREEN + localization.getString("information_player_enters_region", regionData.getName()));
-                                    player.sendMessage(ChatColor.GREEN + localization.getString("information_player_enters_region_sound", regionData.getSound()));
-                                }
-                            }
-                        }
-                    } catch (Exception e) {
-                        getLogger().severe("Error entering region: " + e.getMessage());
+    private RegionData getRegionDataForPlayer(Player player, ApplicableRegionSet applicableRegionSet) {
+        for (ProtectedRegion region : applicableRegionSet) {
+            if (isPlayerInsideRegion(player, region)) {
+                StateFlag.State state = region.getFlag(AreaSoundEvents.getAreaSoundEventsFlag());
+                if (state == StateFlag.State.ALLOW) {
+                    RegionData regionData = RegionsSettings.getInstance(AreaSoundEvents.getInstance()).regionDataMap(region.getId());
+                    if (regionData != null) {
+                        return regionData;
                     }
                 }
             }
         }
+        return null;
+    }
 
-
-        if (!left.contains(player) && entered.get(player) != null && applicableRegionSet.size() == 0) {
-            if (applicableRegionSet.size() == 0) {
-                player.stopSound(entered.get(player).getSound(), entered.get(player).getSource());
-                player.sendMessage(ChatColor.RED + localization.getString("information_player_leaves_region", entered.get(player).getRegion()));
-
-                BukkitTask task = runningTasks.remove(player.getUniqueId());
-                if (task != null) {
-                    task.cancel();
-                }
-
-                entered.remove(player);
-                left.add(player);
+    private void playSoundForPlayer(Player player, RegionData regionData) {
+        BukkitTask soundTask = runningTasks.get(player.getUniqueId());
+        if (regionData.isLoop()) {
+            if (soundTask == null || soundTask.isCancelled()) {
+                soundTask = createLoopingSoundTask(player, regionData);
+                runningTasks.put(player.getUniqueId(), soundTask);
             }
+        } else {
+            player.stopAllSounds();
+            player.playSound(player.getLocation(), regionData.getSound(), regionData.getSource(), regionData.getVolume(), regionData.getPitch());
+        }
+    }
+
+    private void stopSoundForPlayer(Player player, PlayerData playerData) {
+        if (playerData != null) {
+            player.stopSound(playerData.getSound(), playerData.getSource());
+        }
+    }
+
+    private void cancelLoopingSoundTask(Player player) {
+        BukkitTask soundTask = runningTasks.remove(player.getUniqueId());
+        if (soundTask != null) {
+            soundTask.cancel();
+        }
+    }
+
+    private void startLoopingSoundTask(Player player, RegionData regionData) {
+        BukkitTask soundTask = runningTasks.get(player.getUniqueId());
+        if (soundTask == null || soundTask.isCancelled()) {
+            soundTask = createLoopingSoundTask(player, regionData);
+            runningTasks.put(player.getUniqueId(), soundTask);
         }
     }
 
