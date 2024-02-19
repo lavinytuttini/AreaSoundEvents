@@ -69,13 +69,13 @@ public class Pagination {
         ComponentBuilder componentBuilder = new ComponentBuilder();
 
         if (currentPage > 1) {
-            componentBuilder.append("[<<<<]").color(net.md_5.bungee.api.ChatColor.AQUA).bold(true)
+            componentBuilder.append("[<<<<]").color(ChatColor.AQUA.asBungee()).bold(true)
                     .event(new ClickEvent(ClickEvent.Action.RUN_COMMAND, "/areasoundeventsprevpage"));
             componentBuilder.append(" ").reset();
         }
 
         if (currentPage < totalPages) {
-            componentBuilder.append("[>>>>]").color(net.md_5.bungee.api.ChatColor.AQUA).bold(true)
+            componentBuilder.append("[>>>>]").color(ChatColor.AQUA.asBungee()).bold(true)
                     .event(new ClickEvent(ClickEvent.Action.RUN_COMMAND, "/areasoundeventsnextpage"));
         }
 

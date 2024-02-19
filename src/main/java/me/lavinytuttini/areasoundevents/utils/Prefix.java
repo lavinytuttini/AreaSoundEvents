@@ -19,7 +19,6 @@ public class Prefix {
 
     public static String getPrefixPlayerMessage() {
         return Objects.requireNonNullElse(prefixPlayerMessage, prefixConsole);
-
     }
 
     public static void setPrefixPlayerMessage(String prefixPlayerMessage) {

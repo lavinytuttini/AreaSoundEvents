@@ -66,6 +66,6 @@ public class RemoveCommand extends SubCommand {
         }
 
         String nameRegion = args[1];
-        RegionsSettings.getInstance(AreaSoundEvents.getInstance()).removeRegion(player, nameRegion);
+        regionsSettings.removeRegion(player, nameRegion);
     }
 }
