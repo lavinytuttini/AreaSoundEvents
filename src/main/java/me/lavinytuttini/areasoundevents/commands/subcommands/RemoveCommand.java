@@ -7,7 +7,7 @@ import me.lavinytuttini.areasoundevents.data.config.DefaultSubcommandPermissions
 import me.lavinytuttini.areasoundevents.managers.LocalizationManager;
 import me.lavinytuttini.areasoundevents.settings.ConfigSettings;
 import me.lavinytuttini.areasoundevents.settings.RegionsSettings;
-import me.lavinytuttini.areasoundevents.utils.Prefix;
+import me.lavinytuttini.areasoundevents.utils.PlayerMessage;
 import org.bukkit.ChatColor;
 import org.bukkit.entity.Player;
 
@@ -18,7 +18,6 @@ public class RemoveCommand extends SubCommand {
     private final RegionsSettings regionsSettings = RegionsSettings.getInstance(AreaSoundEvents.getInstance());
     private final DefaultSubcommandPermissions defaultSubcommandPermissions = ConfigSettings.getInstance().getDefaultSubcommandPermissions();
     private final LocalizationManager localization = LocalizationManager.getInstance();
-    private final String prefixPlayerMessage = Prefix.getPrefixPlayerMessage();
 
     @Override
     public String getName() {
@@ -57,8 +56,12 @@ public class RemoveCommand extends SubCommand {
     @Override
     public void perform(Player player, String[] args) {
         if (args == null || args.length < 2) {
-            player.sendMessage(prefixPlayerMessage + ChatColor.RED + localization.getString("commands_common_missed_arguments"));
-            player.sendMessage(prefixPlayerMessage + ChatColor.YELLOW + "/areasoundsevents " + this.getSyntax());
+            PlayerMessage.to(player)
+                    .appendLine(localization.getString("commands_common_missed_arguments"), ChatColor.RED)
+                    .appendNewLine()
+                    .append("/areasoundevents ", ChatColor.YELLOW)
+                    .append(this.getSyntax())
+                    .send();
             return;
         }
 

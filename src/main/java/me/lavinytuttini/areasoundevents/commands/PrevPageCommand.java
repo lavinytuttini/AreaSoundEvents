@@ -3,6 +3,7 @@ package me.lavinytuttini.areasoundevents.commands;
 import me.lavinytuttini.areasoundevents.data.PaginationData;
 import me.lavinytuttini.areasoundevents.managers.LocalizationManager;
 import me.lavinytuttini.areasoundevents.utils.Pagination;
+import me.lavinytuttini.areasoundevents.utils.PlayerMessage;
 import me.lavinytuttini.areasoundevents.utils.Prefix;
 import org.bukkit.ChatColor;
 import org.bukkit.command.Command;
@@ -26,7 +27,7 @@ public class PrevPageCommand implements CommandExecutor {
                 paginationData.prevPage();
                 Pagination.getInstance().sendPaginatedMessage(player, paginationData.getCurrentPage());
             } else {
-                player.sendMessage(prefixPlayerMessage + ChatColor.YELLOW + localization.getString("commands_pagination_in_first_page"));
+                PlayerMessage.to(player).appendLine(localization.getString("commands_pagination_in_first_page"), ChatColor.YELLOW).send();
             }
         } else {
             sender.sendMessage(prefixPlayerMessage + ChatColor.RED + localization.getString("commands_only_player_can_use"));

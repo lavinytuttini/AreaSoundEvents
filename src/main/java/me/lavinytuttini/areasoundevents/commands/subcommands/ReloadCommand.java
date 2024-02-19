@@ -7,7 +7,7 @@ import me.lavinytuttini.areasoundevents.managers.ConfigManager;
 import me.lavinytuttini.areasoundevents.managers.LocalizationManager;
 import me.lavinytuttini.areasoundevents.settings.ConfigSettings;
 import me.lavinytuttini.areasoundevents.settings.RegionsSettings;
-import me.lavinytuttini.areasoundevents.utils.Prefix;
+import me.lavinytuttini.areasoundevents.utils.PlayerMessage;
 import org.bukkit.ChatColor;
 import org.bukkit.entity.Player;
 
@@ -16,7 +16,6 @@ import java.util.List;
 public class ReloadCommand extends SubCommand {
     private final DefaultSubcommandPermissions defaultSubcommandPermissions = ConfigSettings.getInstance().getDefaultSubcommandPermissions();
     private final LocalizationManager localization = LocalizationManager.getInstance();
-    private final String prefixPlayerMessage = Prefix.getPrefixPlayerMessage();
 
     @Override
     public String getName() {
@@ -51,8 +50,12 @@ public class ReloadCommand extends SubCommand {
             RegionsSettings.getInstance(AreaSoundEvents.getInstance()).reload(player);
             localization.reload();
         } else {
-            player.sendMessage(prefixPlayerMessage + ChatColor.RED + localization.getString("commands_common_arguments_not_needed"));
-            player.sendMessage(prefixPlayerMessage + ChatColor.YELLOW + "/areasoundsevents " + this.getSyntax());
+            PlayerMessage.to(player)
+                    .appendLine(localization.getString("commands_common_arguments_not_needed"), ChatColor.RED)
+                    .appendNewLine()
+                    .append("/areasoundevents ", ChatColor.YELLOW)
+                    .append(this.getSyntax())
+                    .send();
         }
     }
 }

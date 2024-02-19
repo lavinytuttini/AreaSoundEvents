@@ -3,6 +3,7 @@ package me.lavinytuttini.areasoundevents.settings;
 import me.lavinytuttini.areasoundevents.AreaSoundEvents;
 import me.lavinytuttini.areasoundevents.data.RegionData;
 import me.lavinytuttini.areasoundevents.managers.LocalizationManager;
+import me.lavinytuttini.areasoundevents.utils.PlayerMessage;
 import me.lavinytuttini.areasoundevents.utils.Prefix;
 import me.lavinytuttini.areasoundevents.utils.Utils;
 import org.bukkit.ChatColor;
@@ -27,7 +28,6 @@ public class RegionsSettings {
     private final File file;
     private final Map<String, RegionData> regionDataMap;
     private final String prefixConsole;
-    private final String prefixPlayerMessage;
 
     public RegionsSettings(AreaSoundEvents areaSoundEvents) {
         this.areaSoundEvents = areaSoundEvents;
@@ -37,7 +37,6 @@ public class RegionsSettings {
         this.file = new File(areaSoundEvents.getDataFolder(), fileName);
         this.regionDataMap = new HashMap<>();
         this.prefixConsole = Prefix.getPrefixConsole();
-        this.prefixPlayerMessage = Prefix.getPrefixPlayerMessage();
         instance = this;
     }
 
@@ -64,18 +63,18 @@ public class RegionsSettings {
         if (regionDataMap.containsKey(regionId)) {
             regionDataMap.remove(regionId);
             regionDataMap.put(regionData.getName(), regionData);
-            player.sendMessage( prefixPlayerMessage + ChatColor.GREEN + localization.getString("region_settings_successful_modified", regionId));
+            PlayerMessage.to(player).appendLineFormatted(localization.getString("region_settings_successful_modified"), ChatColor.GREEN, regionId).send();
         } else {
-            player.sendMessage(prefixPlayerMessage + ChatColor.RED + localization.getString("region_settings_common_region_no_exists", regionId));
+            PlayerMessage.to(player).appendLineFormatted(localization.getString("region_settings_common_region_no_exists"), ChatColor.RED, regionId).send();
         }
     }
 
     public void removeRegion(Player player, String regionId) {
         if (regionDataMap.containsKey(regionId)) {
             regionDataMap.remove(regionId);
-            player.sendMessage(prefixPlayerMessage + ChatColor.GREEN + localization.getString("region_settings_removed_region", regionId));
+            PlayerMessage.to(player).appendLineFormatted(localization.getString("region_settings_removed_region"), ChatColor.GREEN, regionId).send();
         } else {
-            player.sendMessage(prefixPlayerMessage + ChatColor.RED + localization.getString("region_settings_common_region_no_exists", regionId));
+            PlayerMessage.to(player).appendLineFormatted(localization.getString("region_settings_common_region_no_exists"), ChatColor.RED, regionId).send();
         }
     }
 
@@ -151,12 +150,12 @@ public class RegionsSettings {
             try (FileWriter writer = new FileWriter(file)) {
                 yaml.dump(Collections.singletonMap("regions", getRegionDataMap()), writer);
                 if (player != null) {
-                    player.sendMessage(prefixPlayerMessage + ChatColor.GREEN + localization.getString("region_settings_successful_save"));
+                    PlayerMessage.to(player).appendLine(localization.getString("region_settings_successful_save"), ChatColor.GREEN).send();
                 }
                 getLogger().info(prefixConsole + "Region settings saved successfully.");
             }
         } catch (IOException e) {
-            Objects.requireNonNull(player).sendMessage(prefixPlayerMessage + ChatColor.RED + localization.getString("region_settings_error_save"));
+            PlayerMessage.to(Objects.requireNonNull(player)).appendLine(localization.getString("region_settings_error_save"), ChatColor.RED).send();
             getLogger().severe( prefixConsole + "Error saving regions.yml: " + e.getMessage());
         }
     }
@@ -165,13 +164,13 @@ public class RegionsSettings {
         try {
             load();
             if (player != null) {
-                player.sendMessage(prefixPlayerMessage + ChatColor.GREEN + localization.getString("region_settings_successful_reload"));
+                PlayerMessage.to(player).appendLine(localization.getString("region_settings_successful_reload"), ChatColor.GREEN).send();
             }
             getLogger().info(prefixConsole + "Region settings reloaded successfully.");
         } catch (Exception e) {
             getLogger().severe(prefixConsole + "Error reloading regions.yml: " + e.getMessage());
             if (player != null) {
-                player.sendMessage(prefixPlayerMessage + ChatColor.RED + localization.getString("region_settings_error_reload"));
+                PlayerMessage.to(player).appendLine(localization.getString("region_settings_error_reload"), ChatColor.RED).send();
             }
         }
     }

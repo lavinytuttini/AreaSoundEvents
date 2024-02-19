@@ -6,6 +6,7 @@ import me.lavinytuttini.areasoundevents.commands.SubCommand;
 import me.lavinytuttini.areasoundevents.commands.subcommands.*;
 import me.lavinytuttini.areasoundevents.listeners.ChatListener;
 import me.lavinytuttini.areasoundevents.settings.ConfigSettings;
+import me.lavinytuttini.areasoundevents.utils.PlayerMessage;
 import me.lavinytuttini.areasoundevents.utils.Prefix;
 import org.bukkit.ChatColor;
 import org.bukkit.command.Command;
@@ -53,8 +54,7 @@ public class CommandManager implements CommandExecutor, TabCompleter {
             String lastCommandLine = chatListener.getLastCommandLine();
             ConfigSettings configSettings = ConfigSettings.getInstance();
             if (configSettings.getMainSettings().isSilentMode()) {
-                player.sendMessage("");
-                player.sendMessage(lastCommandLine);
+                PlayerMessage.to(player).append("").appendNewLine().append(lastCommandLine).send();
             }
 
             if (args.length == 0) {
@@ -67,17 +67,16 @@ public class CommandManager implements CommandExecutor, TabCompleter {
                         if (player.hasPermission(subCommandPermission) || player.isOp()) {
                             subCommand.perform(player, args);
                         } else {
-                            player.sendMessage(prefixPlayerMessage + ChatColor.RED + localization.getString("commands_command_not_allowed"));
+                            PlayerMessage.to(player).appendLine(localization.getString("commands_command_not_allowed"), ChatColor.RED).send();
                         }
                         return true;
                     }
                 }
 
-                player.sendMessage(prefixPlayerMessage + ChatColor.RED + localization.getString("commands_command_invalid"));
-                player.sendMessage(prefixPlayerMessage + ChatColor.GREEN + "/areasoundevents help");
+                PlayerMessage.to(player).appendLine(localization.getString("commands_command_invalid"), ChatColor.RED).append("/areasoundevents help", ChatColor.YELLOW).send();
             }
         } else {
-            sender.sendMessage(prefixPlayerMessage + ChatColor.YELLOW + localization.getString("commands_only_player_can_use"));
+            sender.sendMessage(prefixPlayerMessage + localization.getString("commands_only_player_can_use"));
         }
 
         return true;

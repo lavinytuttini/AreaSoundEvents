@@ -14,7 +14,7 @@ import me.lavinytuttini.areasoundevents.data.RegionData;
 import me.lavinytuttini.areasoundevents.managers.LocalizationManager;
 import me.lavinytuttini.areasoundevents.settings.ConfigSettings;
 import me.lavinytuttini.areasoundevents.settings.RegionsSettings;
-import me.lavinytuttini.areasoundevents.utils.Prefix;
+import me.lavinytuttini.areasoundevents.utils.PlayerMessage;
 import org.bukkit.*;
 import org.bukkit.entity.Player;
 import org.bukkit.event.EventHandler;
@@ -33,7 +33,6 @@ public class PlayerListeners implements Listener {
     private final Map<UUID, BukkitTask> runningTasks = new ConcurrentHashMap<>();
     private final ConfigSettings configSettings = ConfigSettings.getInstance();
     private final LocalizationManager localization = LocalizationManager.getInstance();
-    private final String prefixPlayerMessage = Prefix.getPrefixPlayerMessage();
 
     @EventHandler
     public void quitEvent(PlayerQuitEvent event) {
@@ -80,15 +79,18 @@ public class PlayerListeners implements Listener {
                     }
 
                     if (configSettings.getMainSettings().isSilentMode()) {
-                        player.sendMessage(prefixPlayerMessage + ChatColor.GREEN + localization.getString("information_player_enters_region", regionData.getName()));
-                        player.sendMessage(prefixPlayerMessage + ChatColor.GREEN + localization.getString("information_player_enters_region_sound", regionData.getSound()));
+                        PlayerMessage.to(player)
+                                .appendLineFormatted(localization.getString("information_player_enters_region"), ChatColor.GREEN, regionData.getName())
+                                .appendNewLine()
+                                .appendFormatted(localization.getString("information_player_enters_region_sound"), ChatColor.GREEN, regionData.getSound())
+                                .send();
                     }
                 }
             }
         } else {
             if (entered.containsKey(player)) {
                 if (configSettings.getMainSettings().isSilentMode())
-                    player.sendMessage(prefixPlayerMessage + ChatColor.RED + localization.getString("information_player_leaves_region", entered.get(player).getRegion()));
+                    PlayerMessage.to(player).appendLineFormatted(localization.getString("information_player_leaves_region"), ChatColor.RED, entered.get(player).getRegion()).send();
 
                 cancelLoopingSoundTask(player);
                 stopSoundForPlayer(player, entered.get(player));

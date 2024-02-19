@@ -1,6 +1,7 @@
 package me.lavinytuttini.areasoundevents.managers;
 
 import me.lavinytuttini.areasoundevents.settings.ConfigSettings;
+import me.lavinytuttini.areasoundevents.utils.PlayerMessage;
 import me.lavinytuttini.areasoundevents.utils.Prefix;
 import org.bukkit.ChatColor;
 import org.bukkit.entity.Player;
@@ -12,7 +13,6 @@ import static org.bukkit.Bukkit.getLogger;
 public class ConfigManager {
     private static ConfigManager instance;
     private static final String prefixConsole = Prefix.getPrefixConsole();
-    private static final String prefixPlayerMessage = Prefix.getPrefixPlayerMessage();
     private static LocalizationManager localization;
 
     private ConfigManager() {
@@ -23,10 +23,10 @@ public class ConfigManager {
     public void reload(Player player) {
         try {
             ConfigSettings.getInstance().loadConfig();
-            player.sendMessage(prefixPlayerMessage + ChatColor.GREEN + localization.getString("config_settings_reloaded"));
+            PlayerMessage.to(player).appendLine(localization.getString("config_settings_reloaded"), ChatColor.GREEN).send();
         } catch (IOException e) {
             getLogger().severe(prefixConsole + "Error reloading config settings: " + e.getMessage());
-            player.sendMessage(prefixPlayerMessage + ChatColor.RED + localization.getString("config_settings_error_reloading"));
+            PlayerMessage.to(player).appendLine(localization.getString("config_settings_error_reloading"), ChatColor.RED).send();
         }
     }
 

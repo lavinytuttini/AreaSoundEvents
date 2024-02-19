@@ -45,11 +45,17 @@ public class Pagination {
         int totalPages = (int) Math.ceil((double) messages.size() / pageSize);
 
         if (page < 1 || page > totalPages) {
-            player.sendMessage(ChatColor.RED + localization.getString("pagination_invalid_page_number"));
+            PlayerMessage.to(player).appendLine(localization.getString("pagination_invalid_page_number"), ChatColor.RED).send();
             return;
         }
 
-        player.sendMessage(ChatColor.BOLD + localization.getString("pagination_page") + " " + page + "/" + totalPages);
+        PlayerMessage.to(player)
+                .append(localization.getString("pagination_page"), ChatColor.WHITE, ChatColor.BOLD)
+                .append(" ")
+                .append(Integer.toString(page))
+                .append("/")
+                .append(Integer.toString(totalPages))
+                .send();
 
         int startIndex = (page - 1) * pageSize;
         int endIndex = Math.min(startIndex + pageSize, messages.size());

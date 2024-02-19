@@ -30,14 +30,12 @@ public class LocalizationManager {
         reload();
     }
 
-    public String getString(String key, Object... args) {
+    public String getString(String key) {
         String message = localizedStrings.get(key);
         if (message == null) {
             return prefixConsole + "Missing translation for key: " + key;
         }
-        if (args.length > 0) {
-            message = String.format(message, args);
-        }
+
         return message;
     }
 
