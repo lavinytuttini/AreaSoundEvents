@@ -8,6 +8,8 @@ public class DefaultSubcommandPermissions {
     private String subcommandHelp;
     private String subcommandSave;
     private String subcommandModify;
+    private String subcommandPlay;
+    private String subcommandStop;
 
     public String getSubcommandCreate() {
         return subcommandCreate;
@@ -63,5 +65,21 @@ public class DefaultSubcommandPermissions {
 
     public void setSubcommandModify(String subcommandModify) {
         this.subcommandModify = subcommandModify;
+    }
+
+    public String getSubcommandPlay() {
+        return subcommandPlay;
+    }
+
+    public void setSubcommandPlay(String subcommandPlay) {
+        this.subcommandPlay = subcommandPlay;
+    }
+
+    public String getSubcommandStop() {
+        return subcommandStop;
+    }
+
+    public void setSubcommandStop(String subcommandStop) {
+        this.subcommandStop = subcommandStop;
     }
 }
