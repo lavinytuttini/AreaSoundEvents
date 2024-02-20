@@ -32,6 +32,8 @@ public class CommandManager implements CommandExecutor, TabCompleter {
         subcommandsMap.put("reload", new ReloadCommand());
         subcommandsMap.put("list", new ListCommand());
         subcommandsMap.put("modify", new ModifyCommand());
+        subcommandsMap.put("play", new PlayCommand());
+        subcommandsMap.put("stop", new StopCommand());
         Objects.requireNonNull(areaSoundEvents.getCommand("areasoundevents")).setTabCompleter(this);
     }
 

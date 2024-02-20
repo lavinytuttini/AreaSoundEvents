@@ -92,6 +92,8 @@ public class ConfigSettings {
         loadSetting(config, pathDefaultSubcommandPermissions + "subcommand-help", String.class, defaultSubcommandPermissions::setSubcommandHelp, "areasoundevents.help");
         loadSetting(config, pathDefaultSubcommandPermissions + "subcommand-save", String.class, defaultSubcommandPermissions::setSubcommandSave, "areasoundevents.save");
         loadSetting(config, pathDefaultSubcommandPermissions + "subcommand-modify", String.class, defaultSubcommandPermissions::setSubcommandModify, "areasoundevents.modify");
+        loadSetting(config, pathDefaultSubcommandPermissions + "subcommand-play", String.class, defaultSubcommandPermissions::setSubcommandPlay, "areasoundevents.play");
+        loadSetting(config, pathDefaultSubcommandPermissions + "subcommand-stop", String.class, defaultSubcommandPermissions::setSubcommandStop, "areasoundevents.stop");
     }
 
     private <T, E extends Enum<E>> void loadSetting(FileConfiguration config, String path, Class<T> type, Consumer<T> setter, T defaultValue) {
