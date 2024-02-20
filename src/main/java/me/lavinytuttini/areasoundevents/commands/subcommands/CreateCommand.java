@@ -1,5 +1,6 @@
 package me.lavinytuttini.areasoundevents.commands.subcommands;
 
+import me.lavinytuttini.areasoundevents.AreaSoundEvents;
 import me.lavinytuttini.areasoundevents.commands.SubCommand;
 import me.lavinytuttini.areasoundevents.data.RegionData;
 import me.lavinytuttini.areasoundevents.data.config.DefaultSettings;
@@ -7,6 +8,7 @@ import me.lavinytuttini.areasoundevents.data.config.DefaultSubcommandPermissions
 import me.lavinytuttini.areasoundevents.managers.LocalizationManager;
 import me.lavinytuttini.areasoundevents.settings.ConfigSettings;
 import me.lavinytuttini.areasoundevents.settings.RegionsSettings;
+import me.lavinytuttini.areasoundevents.utils.PlayerMessage;
 import me.lavinytuttini.areasoundevents.utils.Utils;
 import org.bukkit.ChatColor;
 import org.bukkit.Sound;
@@ -15,10 +17,9 @@ import org.bukkit.entity.Player;
 
 import java.util.ArrayList;
 import java.util.List;
-import java.util.Map;
 
 public class CreateCommand extends SubCommand {
-    private final RegionsSettings regionsSettings = RegionsSettings.getInstance();
+    private final RegionsSettings regionsSettings = RegionsSettings.getInstance(AreaSoundEvents.getInstance());
     private final DefaultSettings defaultSettings = ConfigSettings.getInstance().getDefaultSettings();
     private final DefaultSubcommandPermissions defaultSubcommandPermissions = ConfigSettings.getInstance().getDefaultSubcommandPermissions();
     private final LocalizationManager localization = LocalizationManager.getInstance();
@@ -37,31 +38,39 @@ public class CreateCommand extends SubCommand {
     @Override
     public String getPermission() {
         String permission = defaultSubcommandPermissions.getSubcommandCreate();
-        return (!permission.isEmpty()) ? permission : "areasoundevents.create";
+        return !permission.isEmpty() ? permission : "areasoundevents.create";
     }
 
     @Override
     public List<String> getContext(String[] args) {
         List<String> suggestions = new ArrayList<>();
 
-        if (args.length == 2) {
-            suggestions.add("<region-name>");
-        } else if (args.length == 3) {
-            for (Sound sound : Sound.values()) {
-                suggestions.add(String.valueOf(sound.getKey()));
-            }
-        } else if (args.length == 4) {
-            for (SoundCategory category : SoundCategory.values()) {
-                suggestions.add(category.name().toLowerCase());
-            }
-        } else if (args.length == 5) {
-            suggestions.add("[volume (0.0~1.0)]>");
-        } else if (args.length == 6) {
-            suggestions.add("[pitch (0.0~1.0)]>");
-        } else if (args.length == 7) {
-            suggestions.add("[loop (true/false)]>");
-        } else if (args.length == 8) {
-            suggestions.add("[loop-time (seconds)]>");
+        switch (args.length) {
+            case 2:
+                suggestions.add("<region-name>");
+                break;
+            case 3:
+                for (Sound sound : Sound.values()) {
+                    suggestions.add(String.valueOf(sound.getKey()));
+                }
+                break;
+            case 4:
+                for (SoundCategory category : SoundCategory.values()) {
+                    suggestions.add(category.name().toLowerCase());
+                }
+                break;
+            case 5:
+                suggestions.add("[volume (0.0~1.0)]>");
+                break;
+            case 6:
+                suggestions.add("[pitch (0.0~1.0)]>");
+                break;
+            case 7:
+                suggestions.add("[loop (true/false)]>");
+                break;
+            case 8:
+                suggestions.add("[loop-time (seconds)]>");
+                break;
         }
 
         return suggestions;
@@ -70,8 +79,12 @@ public class CreateCommand extends SubCommand {
     @Override
     public void perform(Player player, String[] args) {
         if (args == null || args.length < 3) {
-            player.sendMessage(ChatColor.RED + localization.getString("commands_common_missed_arguments"));
-            player.sendMessage(ChatColor.YELLOW + "/areasoundsevents " + this.getSyntax());
+            PlayerMessage.to(player)
+                    .appendLine(localization.getString("commands_common_missed_arguments"), ChatColor.RED)
+                    .appendNewLine()
+                    .append("/areasoundevents ", ChatColor.YELLOW)
+                    .append(this.getSyntax())
+                    .send();
             return;
         }
 
@@ -99,16 +112,16 @@ public class CreateCommand extends SubCommand {
             loopTime = Utils.parseIntegerArgument(args[7], loopTime);
         }
 
-        Map<String, RegionData> regionDataMap = regionsSettings.getRegionDataMap();
+        createRegion(player, regionName, soundName, source, volume, pitch, loop, loopTime);
+    }
 
-        if (regionDataMap.containsKey(regionName)) {
-            player.sendMessage(ChatColor.RED + localization.getString("commands_create_region_exists", regionName));
+    public void createRegion(Player player, String regionName, String soundName, SoundCategory source, float volume, float pitch, boolean loop, int loopTime) {
+        if (regionsSettings.getRegionDataMap().containsKey(regionName)) {
+            PlayerMessage.to(player).appendLineFormatted(localization.getString("commands_create_region_exists"), ChatColor.RED, regionName).send();
         } else {
             RegionData regionData = new RegionData(regionName, soundName, source, volume, pitch, loop, loopTime);
-            regionDataMap.put(regionData.getName(), regionData);
-            regionsSettings.setRegionDataMap(regionDataMap);
-
-            player.sendMessage(ChatColor.GREEN + localization.getString("commands_create_created_region"));
+            regionsSettings.addRegion(regionName, regionData);
+            PlayerMessage.to(player).appendLine(localization.getString("commands_create_created_region"), ChatColor.GREEN).send();
         }
     }
 }

@@ -1,20 +1,21 @@
 package me.lavinytuttini.areasoundevents.commands.subcommands;
 
+import me.lavinytuttini.areasoundevents.AreaSoundEvents;
 import me.lavinytuttini.areasoundevents.commands.SubCommand;
 import me.lavinytuttini.areasoundevents.data.RegionData;
 import me.lavinytuttini.areasoundevents.data.config.DefaultSubcommandPermissions;
 import me.lavinytuttini.areasoundevents.managers.LocalizationManager;
 import me.lavinytuttini.areasoundevents.settings.ConfigSettings;
 import me.lavinytuttini.areasoundevents.settings.RegionsSettings;
+import me.lavinytuttini.areasoundevents.utils.PlayerMessage;
 import org.bukkit.ChatColor;
 import org.bukkit.entity.Player;
 
 import java.util.ArrayList;
 import java.util.List;
-import java.util.Map;
 
 public class RemoveCommand extends SubCommand {
-    private final RegionsSettings regionsSettings = RegionsSettings.getInstance();
+    private final RegionsSettings regionsSettings = RegionsSettings.getInstance(AreaSoundEvents.getInstance());
     private final DefaultSubcommandPermissions defaultSubcommandPermissions = ConfigSettings.getInstance().getDefaultSubcommandPermissions();
     private final LocalizationManager localization = LocalizationManager.getInstance();
 
@@ -55,21 +56,16 @@ public class RemoveCommand extends SubCommand {
     @Override
     public void perform(Player player, String[] args) {
         if (args == null || args.length < 2) {
-            player.sendMessage(ChatColor.RED + localization.getString("commands_common_missed_arguments"));
-            player.sendMessage(ChatColor.YELLOW + "/areasoundsevents " + this.getSyntax());
+            PlayerMessage.to(player)
+                    .appendLine(localization.getString("commands_common_missed_arguments"), ChatColor.RED)
+                    .appendNewLine()
+                    .append("/areasoundevents ", ChatColor.YELLOW)
+                    .append(this.getSyntax())
+                    .send();
             return;
         }
 
         String nameRegion = args[1];
-        RegionData regionData = RegionsSettings.getInstance().regionDataMap(nameRegion);
-
-        if (regionData == null) {
-            player.sendMessage(ChatColor.RED + localization.getString("commands_common_region_no_exists", nameRegion));
-        } else {
-            Map<String, RegionData> regionDataMap = regionsSettings.getRegionDataMap();
-            regionDataMap.remove(nameRegion, regionData);
-            regionsSettings.setRegionDataMap(regionDataMap);
-            player.sendMessage(ChatColor.GREEN + localization.getString("commands_remove_removed_region", nameRegion));
-        }
+        regionsSettings.removeRegion(player, nameRegion);
     }
 }

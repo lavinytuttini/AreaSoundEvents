@@ -6,6 +6,8 @@ import me.lavinytuttini.areasoundevents.commands.SubCommand;
 import me.lavinytuttini.areasoundevents.commands.subcommands.*;
 import me.lavinytuttini.areasoundevents.listeners.ChatListener;
 import me.lavinytuttini.areasoundevents.settings.ConfigSettings;
+import me.lavinytuttini.areasoundevents.utils.PlayerMessage;
+import me.lavinytuttini.areasoundevents.utils.Prefix;
 import org.bukkit.ChatColor;
 import org.bukkit.command.Command;
 import org.bukkit.command.CommandExecutor;
@@ -20,6 +22,7 @@ import java.util.stream.Collectors;
 public class CommandManager implements CommandExecutor, TabCompleter {
     private final LocalizationManager localization = LocalizationManager.getInstance();
     private final Map<String, SubCommand> subcommandsMap = new HashMap<>();
+    private final String prefixPlayerMessage = Prefix.getPrefixPlayerMessage();
 
     public CommandManager(AreaSoundEvents areaSoundEvents) {
         subcommandsMap.put("help", new HelpCommand());
@@ -29,6 +32,8 @@ public class CommandManager implements CommandExecutor, TabCompleter {
         subcommandsMap.put("reload", new ReloadCommand());
         subcommandsMap.put("list", new ListCommand());
         subcommandsMap.put("modify", new ModifyCommand());
+        subcommandsMap.put("play", new PlayCommand());
+        subcommandsMap.put("stop", new StopCommand());
         Objects.requireNonNull(areaSoundEvents.getCommand("areasoundevents")).setTabCompleter(this);
     }
 
@@ -50,9 +55,8 @@ public class CommandManager implements CommandExecutor, TabCompleter {
 
             String lastCommandLine = chatListener.getLastCommandLine();
             ConfigSettings configSettings = ConfigSettings.getInstance();
-            if (!configSettings.getMainSettings().isSilentMode()) {
-                player.sendMessage("");
-                player.sendMessage(lastCommandLine);
+            if (configSettings.getMainSettings().isSilentMode()) {
+                PlayerMessage.to(player).append("").appendNewLine().append(lastCommandLine).send();
             }
 
             if (args.length == 0) {
@@ -65,17 +69,16 @@ public class CommandManager implements CommandExecutor, TabCompleter {
                         if (player.hasPermission(subCommandPermission) || player.isOp()) {
                             subCommand.perform(player, args);
                         } else {
-                            player.sendMessage(ChatColor.RED + localization.getString("commands_command_not_allowed"));
+                            PlayerMessage.to(player).appendLine(localization.getString("commands_command_not_allowed"), ChatColor.RED).send();
                         }
                         return true;
                     }
                 }
 
-                player.sendMessage(ChatColor.RED + localization.getString("commands_command_invalid"));
-                player.sendMessage(ChatColor.GREEN + "/areasoundevents help");
+                PlayerMessage.to(player).appendLine(localization.getString("commands_command_invalid"), ChatColor.RED).append("/areasoundevents help", ChatColor.YELLOW).send();
             }
         } else {
-            sender.sendMessage(ChatColor.YELLOW + localization.getString("commands_only_player_can_use"));
+            sender.sendMessage(prefixPlayerMessage + localization.getString("commands_only_player_can_use"));
         }
 
         return true;

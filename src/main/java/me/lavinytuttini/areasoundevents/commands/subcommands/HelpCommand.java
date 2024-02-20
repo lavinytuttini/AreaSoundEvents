@@ -6,6 +6,7 @@ import me.lavinytuttini.areasoundevents.data.config.DefaultSubcommandPermissions
 import me.lavinytuttini.areasoundevents.managers.CommandManager;
 import me.lavinytuttini.areasoundevents.managers.LocalizationManager;
 import me.lavinytuttini.areasoundevents.settings.ConfigSettings;
+import me.lavinytuttini.areasoundevents.utils.PlayerMessage;
 import org.bukkit.ChatColor;
 import org.bukkit.entity.Player;
 
@@ -34,7 +35,7 @@ public class HelpCommand extends SubCommand {
     @Override
     public String getPermission() {
         String permission = defaultSubcommandPermissions.getSubcommandHelp();
-        return (!permission.isEmpty()) ? permission : "areasoundevents.help";
+        return !permission.isEmpty() ? permission : "areasoundevents.help";
     }
 
     @Override
@@ -46,23 +47,36 @@ public class HelpCommand extends SubCommand {
     public void perform(Player player, String[] args) {
         if (args.length <= 1) {
             CommandManager commandManager = new CommandManager(areaSoundEvents);
-            player.sendMessage("");
-            player.sendMessage(ChatColor.AQUA + "====================  " + ChatColor.YELLOW + ChatColor.BOLD + "COMMANDS" + ChatColor.AQUA + "  =====================");
-            player.sendMessage(ChatColor.AQUA + "================== " + ChatColor.AQUA + "AreaSoundEvents" + ChatColor.AQUA + " ===================");
-            player.sendMessage("");
-            player.sendMessage(ChatColor.GREEN + "/areasoundevents " + ChatColor.YELLOW + "<subcommand>");
+            PlayerMessage.to(player)
+                    .append("")
+                    .appendNewLine()
+                    .append("====================  ", ChatColor.AQUA).append("COMMANDS", ChatColor.YELLOW, ChatColor.BOLD).append("  =====================", ChatColor.AQUA)
+                    .appendNewLine()
+                    .append("================== ", ChatColor.AQUA).append("AreaSoundEvents", ChatColor.AQUA).append(" ===================", ChatColor.AQUA)
+                    .send();
+            PlayerMessage.to(player).append("").appendNewLine().append("/areasoundevents ", ChatColor.GREEN).append("<subcommand>", ChatColor.YELLOW).send();
+            PlayerMessage.to(player).append("").appendNewLine().send();
             for (String subCommandName : commandManager.getSubcommandsMap().keySet()) {
                 SubCommand subCommand = commandManager.getSubCommandByName(subCommandName);
                 if (subCommand != null) {
-                    player.sendMessage(ChatColor.YELLOW + subCommand.getSyntax() + ChatColor.RESET + ChatColor.GRAY + " - " + ChatColor.RESET + ChatColor.ITALIC + subCommand.getDescription());
+                    PlayerMessage.to(player)
+                            .append(subCommand.getSyntax(), ChatColor.YELLOW).append(" - ", ChatColor.RESET, ChatColor.GRAY).append(subCommand.getDescription(), ChatColor.RESET, ChatColor.ITALIC).send();
                 }
             }
-            player.sendMessage("");
-            player.sendMessage(ChatColor.AQUA + "=====================================================");
-            player.sendMessage("");
+            PlayerMessage.to(player)
+                    .append("")
+                    .appendNewLine()
+                    .append("=====================================================", ChatColor.AQUA)
+                    .append("")
+                    .appendNewLine()
+                    .send();
         } else {
-            player.sendMessage(ChatColor.RED + localization.getString("commands_common_arguments_not_needed"));
-            player.sendMessage(ChatColor.YELLOW + "/areasoundsevents " + this.getSyntax());
+            PlayerMessage.to(player)
+                    .appendLine(localization.getString("commands_common_arguments_not_needed"), ChatColor.RED)
+                    .appendNewLine()
+                    .append("/areasoundevents ", ChatColor.YELLOW)
+                    .append(this.getSyntax())
+                    .send();
         }
     }
 }

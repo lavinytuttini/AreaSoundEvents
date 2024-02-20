@@ -59,6 +59,8 @@ default-settings:
     subcommand-help: areasoundevents.help
     subcommand-save: areasoundevents.save
     subcommand-modify: areasoundevents.modify
+    subcommand-play: areasoundevents.play
+    subcommand-stop: areasoundevents.stop
 
   # Default value to define the number of regions to display per
   # page in the /areasoundevents list command

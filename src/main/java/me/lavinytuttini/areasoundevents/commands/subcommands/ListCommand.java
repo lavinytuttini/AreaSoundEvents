@@ -1,5 +1,6 @@
 package me.lavinytuttini.areasoundevents.commands.subcommands;
 
+import me.lavinytuttini.areasoundevents.AreaSoundEvents;
 import me.lavinytuttini.areasoundevents.commands.SubCommand;
 import me.lavinytuttini.areasoundevents.data.RegionData;
 import me.lavinytuttini.areasoundevents.data.config.DefaultSubcommandPermissions;
@@ -7,6 +8,7 @@ import me.lavinytuttini.areasoundevents.managers.LocalizationManager;
 import me.lavinytuttini.areasoundevents.settings.ConfigSettings;
 import me.lavinytuttini.areasoundevents.settings.RegionsSettings;
 import me.lavinytuttini.areasoundevents.utils.Pagination;
+import me.lavinytuttini.areasoundevents.utils.PlayerMessage;
 import net.md_5.bungee.api.chat.*;
 import net.md_5.bungee.api.chat.hover.content.Text;
 import org.bukkit.ChatColor;
@@ -18,7 +20,7 @@ import java.util.List;
 import java.util.Map;
 
 public class ListCommand extends SubCommand {
-    private final RegionsSettings regionsSettings = RegionsSettings.getInstance();
+    private final RegionsSettings regionsSettings = RegionsSettings.getInstance(AreaSoundEvents.getInstance());
     private final DefaultSubcommandPermissions defaultSubcommandPermissions = ConfigSettings.getInstance().getDefaultSubcommandPermissions();
     private static final LocalizationManager localization = LocalizationManager.getInstance();
 
@@ -45,7 +47,7 @@ public class ListCommand extends SubCommand {
     @Override
     public String getPermission() {
         String permission = defaultSubcommandPermissions.getSubcommandHelp();
-        return (!permission.isEmpty()) ? permission : "areasoundevents.list";
+        return !permission.isEmpty() ? permission : "areasoundevents.list";
     }
 
     @Override
@@ -53,25 +55,24 @@ public class ListCommand extends SubCommand {
         if (args.length == 1) {
             Map<String, RegionData> regionDataMap = regionsSettings.getRegionDataMap();
 
-            List<BaseComponent[]> messageList = new ArrayList<>();
             if (regionDataMap.isEmpty()) {
-                player.sendMessage(ChatColor.YELLOW + localization.getString("commands_list_no_entries_found"));
+                PlayerMessage.to(player).appendLine(localization.getString("commands_list_no_entries_found"), ChatColor.YELLOW).send();
             } else {
-                for (Map.Entry<String, RegionData> entry : regionDataMap.entrySet()) {
-                    BaseComponent[] messageComponents = getMessage(entry);
-                    messageList.add(messageComponents);
-                }
+                List<BaseComponent[]> messageList = new ArrayList<>();
+                regionDataMap.forEach((regionName, regionData) -> messageList.add(getMessage(regionName, regionData)));
                 Pagination.getInstance().init(player, messageList);
             }
         } else {
-            player.sendMessage(ChatColor.RED + localization.getString("commands_common_arguments_not_needed"));
-            player.sendMessage(ChatColor.YELLOW + "/areasoundsevents " + this.getSyntax());
+            PlayerMessage.to(player)
+                    .appendLine(localization.getString("commands_common_arguments_not_needed"), ChatColor.RED)
+                    .appendNewLine()
+                    .append("/areasoundevents ", ChatColor.YELLOW).append(this.getSyntax())
+                    .send();
         }
     }
 
-    private static BaseComponent[] getMessage(Map.Entry<String, RegionData> entry) {
-        String regionName = entry.getKey();
-        RegionData regionData = entry.getValue();
+    private static BaseComponent[] getMessage(String regionName, RegionData regionData) {
+        ComponentBuilder messageBuilder = new ComponentBuilder();
 
         String soundName = regionData.getSound();
         SoundCategory source = regionData.getSource();
@@ -80,53 +81,66 @@ public class ListCommand extends SubCommand {
         boolean loop = regionData.isLoop();
         int loopTime = regionData.getLoopTime();
 
-        ComponentBuilder messageBuilder = new ComponentBuilder();
 
-        ComponentBuilder modifyButtonBuilder = new ComponentBuilder(" [" + localization.getString("commands_list_modify_button") + "] ")
-                .color(net.md_5.bungee.api.ChatColor.GREEN)
-                .event(new ClickEvent(ClickEvent.Action.SUGGEST_COMMAND, "/areasoundevents modify " + regionName))
-                .event(new HoverEvent(HoverEvent.Action.SHOW_TEXT, new Text(localization.getString("commands_list_tooltip_modify_button") + " " + ChatColor.GOLD + regionName)));
 
-        ComponentBuilder removeButtonBuilder = new ComponentBuilder("[" + localization.getString("commands_list_remove_button") + "] \n")
-                .color(net.md_5.bungee.api.ChatColor.RED)
-                .event(new ClickEvent(ClickEvent.Action.RUN_COMMAND, "/areasoundevents remove " + regionName))
-                .event(new HoverEvent(HoverEvent.Action.SHOW_TEXT, new Text(localization.getString("commands_list_tooltip_remove_button") + " " + ChatColor.GOLD + regionName)));
+        ComponentBuilder modifyButtonBuilder = createButton(
+                localization.getString("commands_list_modify_button"),
+                ChatColor.GREEN,
+                ClickEvent.Action.SUGGEST_COMMAND,
+                "/areasoundevents modify " + regionName,
+                localization.getString("commands_list_tooltip_modify_button") + ChatColor.GOLD + regionName
+        );
 
-        ComponentBuilder regionButtonBuilder = new ComponentBuilder("Region:")
-                .color(net.md_5.bungee.api.ChatColor.GREEN)
-                .event(new ClickEvent(ClickEvent.Action.SUGGEST_COMMAND, "/areasoundevents modify " + regionName + " name="));
+        ComponentBuilder removeButtonBuilder = createButton(
+                localization.getString("commands_list_remove_button"),
+                ChatColor.RED,
+                ClickEvent.Action.RUN_COMMAND,
+                "/areasoundevents remove " + regionName,
+                localization.getString("commands_list_tooltip_remove_button") + ChatColor.GOLD + regionName
+        );
 
-        ComponentBuilder soundButtonBuilder = new ComponentBuilder("Sound:")
-                .color(net.md_5.bungee.api.ChatColor.GREEN)
-                .event(new ClickEvent(ClickEvent.Action.SUGGEST_COMMAND, "/areasoundevents modify " + regionName + " sound="));
+        ComponentBuilder regionButtonBuilder = createButton(
+                "Region:",
+                "/areasoundevents modify " + regionName + " name="
+        );
 
-        ComponentBuilder sourceButtonBuilder = new ComponentBuilder("Source:")
-                .color(net.md_5.bungee.api.ChatColor.GREEN)
-                .event(new ClickEvent(ClickEvent.Action.SUGGEST_COMMAND, "/areasoundevents modify " + regionName + " source="));
+        ComponentBuilder soundButtonBuilder = createButton(
+                "Sound:",
+                "/areasoundevents modify " + regionName + " sound="
+        );
 
-        ComponentBuilder volumeButtonBuilder = new ComponentBuilder("Volume:")
-                .color(net.md_5.bungee.api.ChatColor.GREEN)
-                .event(new ClickEvent(ClickEvent.Action.SUGGEST_COMMAND, "/areasoundevents modify " + regionName + " volume="));
+        ComponentBuilder sourceButtonBuilder = createButton(
+                "Source:",
+                "/areasoundevents modify " + regionName + " source="
+        );
 
-        ComponentBuilder pitchButtonBuilder = new ComponentBuilder("Pitch:")
-                .color(net.md_5.bungee.api.ChatColor.GREEN)
-                .event(new ClickEvent(ClickEvent.Action.SUGGEST_COMMAND, "/areasoundevents modify " + regionName + " pitch="));
+        ComponentBuilder volumeButtonBuilder = createButton(
+                "Volume:",
+                "/areasoundevents modify " + regionName + " volume="
+        );
 
-        ComponentBuilder loopButtonBuilder = new ComponentBuilder("Loop:")
-                .color(net.md_5.bungee.api.ChatColor.GREEN)
-                .event(new ClickEvent(ClickEvent.Action.SUGGEST_COMMAND, "/areasoundevents modify " + regionName + " loop="));
+        ComponentBuilder pitchButtonBuilder = createButton(
+                "Pitch:",
+                "/areasoundevents modify " + regionName + " pitch="
+        );
 
-        ComponentBuilder loopTimeButtonBuilder = new ComponentBuilder("LoopTime:")
-                .color(net.md_5.bungee.api.ChatColor.GREEN)
-                .event(new ClickEvent(ClickEvent.Action.SUGGEST_COMMAND, "/areasoundevents modify " + regionName + " loopTime="));
+        ComponentBuilder loopButtonBuilder = createButton(
+                "Loop:",
+                "/areasoundevents modify " + regionName + " loop="
+        );
+
+        ComponentBuilder loopTimeButtonBuilder = createButton(
+                "LoopTime:",
+                "/areasoundevents modify " + regionName + " loopTime="
+        );
 
         messageBuilder.append(regionButtonBuilder.create())
-                .color(net.md_5.bungee.api.ChatColor.GREEN)
+                .color(ChatColor.GREEN.asBungee())
                 .append("").reset()
                 .append(ChatColor.GOLD + " " + regionName)
                 .append(modifyButtonBuilder.create())
                 .append(removeButtonBuilder.create())
-                .append("").reset();
+                .append("\n").reset();
         messageBuilder.append(ChatColor.GREEN + " | ").append(soundButtonBuilder.create()).append("").reset().append(ChatColor.WHITE + " " + soundName + "\n");
         messageBuilder.append(ChatColor.GREEN + " | ").append(sourceButtonBuilder.create()).append("").reset().append(ChatColor.WHITE + " " + source + "\n");
         messageBuilder.append(ChatColor.GREEN + " | ").append(volumeButtonBuilder.create()).append("").reset().append(ChatColor.WHITE + " " + volume + "\n");
@@ -135,5 +149,18 @@ public class ListCommand extends SubCommand {
         messageBuilder.append(ChatColor.GREEN + " | ").append(loopTimeButtonBuilder.create()).append("").reset().append(ChatColor.WHITE + " " + loopTime);
 
         return messageBuilder.create();
+    }
+
+    private static ComponentBuilder createButton(String buttonText, ChatColor chatColor, ClickEvent.Action clickEventAction, String command, String hoverText) {
+        return new ComponentBuilder(" [" + buttonText + "]")
+                .color(chatColor.asBungee())
+                .event(new ClickEvent(clickEventAction, command))
+                .event(new HoverEvent(HoverEvent.Action.SHOW_TEXT, new Text(hoverText)));
+    }
+
+    private static ComponentBuilder createButton(String buttonText, String command) {
+        return new ComponentBuilder(buttonText)
+                .color(ChatColor.GREEN.asBungee())
+                .event(new ClickEvent(ClickEvent.Action.SUGGEST_COMMAND, command));
     }
 }

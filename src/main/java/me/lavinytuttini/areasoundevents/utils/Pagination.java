@@ -8,16 +8,21 @@ import net.md_5.bungee.api.chat.ClickEvent;
 import net.md_5.bungee.api.chat.ComponentBuilder;
 import org.bukkit.ChatColor;
 import org.bukkit.entity.Player;
-
 import java.util.*;
 
 public class Pagination {
     private static Pagination instance;
-    private final LocalizationManager localization = LocalizationManager.getInstance();
-    public final Map<Player, PaginationData> paginationDataMap = new HashMap<>();
-    public List<BaseComponent[]> messages = new ArrayList<>();
-    public int totalPages = 0;
-    public int pageSize;
+    private final LocalizationManager localization;
+    private final ConfigSettings configSettings;
+    private final Map<Player, PaginationData> paginationDataMap;
+    private final List<BaseComponent[]> messages;
+
+    private Pagination() {
+        localization = LocalizationManager.getInstance();
+        configSettings = ConfigSettings.getInstance();
+        paginationDataMap = new HashMap<>();
+        messages = new ArrayList<>();
+    }
 
     public PaginationData getPaginationDataMap(Player player) {
         return paginationDataMap.get(player);
@@ -29,33 +34,33 @@ public class Pagination {
     }
 
     public void init(Player player, List<BaseComponent[]> messages) {
-        totalPages = 0;
-        PaginationData paginationData = getPaginationDataMap(player);
-        if (paginationData != null) paginationData.setCurrentPage(1);
-        paginationDataMap.putIfAbsent(player, new PaginationData());
+        paginationDataMap.computeIfAbsent(player, k -> new PaginationData()).setCurrentPage(1);
         setMessages(messages);
         sendPaginatedMessage(player, 1);
     }
 
     public void sendPaginatedMessage(Player player, int page) {
-        ConfigSettings configSettings = ConfigSettings.getInstance();
-        this.pageSize = configSettings.getDefaultSettings().getDefaultListPageSize();
+        int pageSize = configSettings.getDefaultSettings().getDefaultListPageSize();
 
-        totalPages = (int) Math.ceil((double) messages.size() / pageSize);
+        int totalPages = (int) Math.ceil((double) messages.size() / pageSize);
 
         if (page < 1 || page > totalPages) {
-            player.sendMessage(ChatColor.RED + localization.getString("pagination_invalid_page_number"));
+            PlayerMessage.to(player).appendLine(localization.getString("pagination_invalid_page_number"), ChatColor.RED).send();
             return;
         }
 
-        player.sendMessage(ChatColor.BOLD + localization.getString("pagination_page") + " " + page + "/" + totalPages);
+        PlayerMessage.to(player)
+                .append(localization.getString("pagination_page"), ChatColor.WHITE, ChatColor.BOLD)
+                .append(" ")
+                .append(Integer.toString(page))
+                .append("/")
+                .append(Integer.toString(totalPages))
+                .send();
 
         int startIndex = (page - 1) * pageSize;
         int endIndex = Math.min(startIndex + pageSize, messages.size());
 
-        for (int i = startIndex; i < endIndex; i++) {
-            player.spigot().sendMessage(messages.get(i));
-        }
+        messages.subList(startIndex, endIndex).forEach(player.spigot()::sendMessage);
 
         sendPaginationButtons(player, page, totalPages);
     }
@@ -64,13 +69,13 @@ public class Pagination {
         ComponentBuilder componentBuilder = new ComponentBuilder();
 
         if (currentPage > 1) {
-            componentBuilder.append("[<<<<]").color(net.md_5.bungee.api.ChatColor.AQUA).bold(true)
+            componentBuilder.append("[<<<<]").color(ChatColor.AQUA.asBungee()).bold(true)
                     .event(new ClickEvent(ClickEvent.Action.RUN_COMMAND, "/areasoundeventsprevpage"));
             componentBuilder.append(" ").reset();
         }
 
         if (currentPage < totalPages) {
-            componentBuilder.append("[>>>>]").color(net.md_5.bungee.api.ChatColor.AQUA).bold(true)
+            componentBuilder.append("[>>>>]").color(ChatColor.AQUA.asBungee()).bold(true)
                     .event(new ClickEvent(ClickEvent.Action.RUN_COMMAND, "/areasoundeventsnextpage"));
         }
 

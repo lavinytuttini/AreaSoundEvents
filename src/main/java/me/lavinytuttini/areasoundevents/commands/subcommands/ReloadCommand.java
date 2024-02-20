@@ -1,10 +1,13 @@
 package me.lavinytuttini.areasoundevents.commands.subcommands;
 
+import me.lavinytuttini.areasoundevents.AreaSoundEvents;
 import me.lavinytuttini.areasoundevents.commands.SubCommand;
 import me.lavinytuttini.areasoundevents.data.config.DefaultSubcommandPermissions;
+import me.lavinytuttini.areasoundevents.managers.ConfigManager;
 import me.lavinytuttini.areasoundevents.managers.LocalizationManager;
 import me.lavinytuttini.areasoundevents.settings.ConfigSettings;
 import me.lavinytuttini.areasoundevents.settings.RegionsSettings;
+import me.lavinytuttini.areasoundevents.utils.PlayerMessage;
 import org.bukkit.ChatColor;
 import org.bukkit.entity.Player;
 
@@ -43,12 +46,16 @@ public class ReloadCommand extends SubCommand {
     @Override
     public void perform(Player player, String[] args) {
         if (args.length == 1) {
-            ConfigSettings.getInstance().reload(player);
-            RegionsSettings.getInstance().reload(player);
+            ConfigManager.getInstance().reload(player);
+            RegionsSettings.getInstance(AreaSoundEvents.getInstance()).reload(player);
             localization.reload();
         } else {
-            player.sendMessage(ChatColor.RED + localization.getString("commands_common_arguments_not_needed"));
-            player.sendMessage(ChatColor.YELLOW + "/areasoundsevents " + this.getSyntax());
+            PlayerMessage.to(player)
+                    .appendLine(localization.getString("commands_common_arguments_not_needed"), ChatColor.RED)
+                    .appendNewLine()
+                    .append("/areasoundevents ", ChatColor.YELLOW)
+                    .append(this.getSyntax())
+                    .send();
         }
     }
 }
