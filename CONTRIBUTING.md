@@ -2,6 +2,8 @@
 
 This project uses a branch flow based on `master` for stable releases and `develop` for active development. Follow these steps to contribute:
 
+**(1TH METHOD)**
+
 1. **Clone** the repository:
    ```bash
    git clone https://github.com/lavinytuttini/AreaSoundEvents.git
@@ -22,13 +24,24 @@ This project uses a branch flow based on `master` for stable releases and `devel
    - Make sure to compare your branch with develop.
 
 6. **Wait for review and approval** before merging.
-```yaml
----
 
-### Expected result
-With this:
-- Users will be able to create branches and submit PRs to `develop`.
-- Only me will be able to approve and merge PRs.
-- No one will be able to push directly to `develop` or `main`.
+**(2ND METHOD)**
 
-If you need more help with any step, let me know. 😊
+1. **Create a new fork**
+   
+![Captura de pantalla 2024-11-27 154005](https://github.com/user-attachments/assets/edecb5a3-1f9a-4ecd-99da-924e7745b1a8)
+
+![Captura de pantalla 2024-11-27 153836](https://github.com/user-attachments/assets/bd757438-3d2c-40e2-9dbe-0d7aae2183aa)
+
+2. **Create a new branch** based on develop:
+   ```bash
+   git checkout -b my-new-branch develop
+
+3. **Make your changes, commit them, and push** them to your remote repository:
+   ```bash
+   git push origin my-new-branch
+
+5. **Create** a **Pull Request** to develop:
+   - Make sure to compare your branch with develop.
+
+6. **Wait for review and approval** before merging.
