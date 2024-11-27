@@ -1,4 +1,4 @@
-# AreaSoundEvents Plugin Documentation
+#  AreaSoundEvents Plugin Documentation
 
 ## Table of Contents
 
