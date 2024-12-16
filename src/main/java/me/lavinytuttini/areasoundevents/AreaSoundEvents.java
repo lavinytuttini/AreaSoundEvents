@@ -56,6 +56,13 @@ public final class AreaSoundEvents extends JavaPlugin {
     public void onEnable() {
         instance = this;
         serverVersion = Utils.getServerVersion();
+
+        if (serverVersion == ServerVersion.UNKNOWN) {
+            getLogger().severe("Please use a compatible version of the server");
+            getServer().getPluginManager().disablePlugin(this);
+            return;
+        }
+
         initializeWorldGuard();
         loadConfigurations();
         checkForUpdates();
@@ -65,7 +72,10 @@ public final class AreaSoundEvents extends JavaPlugin {
 
     @Override
     public void onDisable() {
-        saveRegionsSettings();
+        if (serverVersion != ServerVersion.UNKNOWN) {
+            saveRegionsSettings();
+        }
+
         printDisableMessage();
     }
 
@@ -81,7 +91,7 @@ public final class AreaSoundEvents extends JavaPlugin {
             if (existing instanceof StateFlag) {
                 setAreaSoundEventsFlag((StateFlag) existing);
             } else {
-                getLogger().severe(prefixConsole + "Failed to initialize area-sound-events flag. Existing flag is not of type StateFlag.");
+                getLogger().severe(prefixConsole + "Failed to initialize area-sound-events flag. Existing flag is not of type StateFlag");
                 throw new RuntimeException(e);
             }
         }
@@ -92,11 +102,11 @@ public final class AreaSoundEvents extends JavaPlugin {
         worldGuardPlugin = PluginManager.setPlugin("WorldGuard", WorldGuardPlugin.class);
 
         if (worldGuardPlugin == null) {
-            getLogger().severe(prefixConsole + "WorldGuard plugin not found. Some features may not work correctly.");
+            getLogger().severe(prefixConsole + "WorldGuard plugin not found. Some features may not work correctly");
         }
 
         if (worldEditPlugin == null) {
-            getLogger().severe(prefixConsole + "WorldEdit plugin not found. Some features may not work correctly.");
+            getLogger().severe(prefixConsole + "WorldEdit plugin not found. Some features may not work correctly");
         }
     }
 
