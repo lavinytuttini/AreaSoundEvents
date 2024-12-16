@@ -50,7 +50,7 @@ public class ConfigSettings {
         try {
             if (!configFile.exists()) {
                 areaSoundEvents.saveResource("config.yml", false);
-                getLogger().info( prefixConsole + "Config file not found, created new config.yml.");
+                getLogger().info( prefixConsole + "Config file not found, created new config.yml");
             }
 
             FileConfiguration config = YamlConfiguration.loadConfiguration(configFile);
@@ -134,11 +134,11 @@ public class ConfigSettings {
     }
 
     private void logMissingPath(String path) {
-        getLogger().info(prefixConsole + "'" + path + "' is not set in [config.yml]. Using default value.");
+        getLogger().info(prefixConsole + "'" + path + "' is not set in [config.yml]. Using default value");
     }
 
     private void logConversionFailure(String path, String typeName) {
-        getLogger().warning(prefixConsole + "Failed to convert value for path '" + path + "' to type " + typeName + ". Using default value.");
+        getLogger().warning(prefixConsole + "Failed to convert value for path '" + path + "' to type " + typeName + ". Using default value");
     }
 
     public static ConfigSettings getInstance() {

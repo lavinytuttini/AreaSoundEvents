@@ -118,7 +118,7 @@ public class RegionsSettings {
 
     private void saveDefaultResource() {
         areaSoundEvents.saveResource(fileName, true);
-        getLogger().info(prefixConsole + "Default regions.yml file saved.");
+        getLogger().info(prefixConsole + "Default regions.yml file saved");
     }
 
     private void processRegionProperties(String regionName, Map<String, Object> properties) {
@@ -133,7 +133,7 @@ public class RegionsSettings {
 
         regionDataMap.put(regionName, regionData);
 
-        getLogger().info(prefixConsole + "Region '" + regionName + "' has been correctly processed.");
+        getLogger().info(prefixConsole + "Region '" + regionName + "' has been correctly processed");
     }
 
     public void save(Player player) {
@@ -154,7 +154,7 @@ public class RegionsSettings {
                 if (player != null) {
                     PlayerMessage.to(player).appendLine(localization.getString("region_settings_successful_save"), ChatColor.GREEN).send();
                 }
-                getLogger().info(prefixConsole + "Region settings saved successfully.");
+                getLogger().info(prefixConsole + "Region settings saved successfully");
             }
         } catch (IOException e) {
             PlayerMessage.to(Objects.requireNonNull(player)).appendLine(localization.getString("region_settings_error_save"), ChatColor.RED).send();
@@ -168,7 +168,7 @@ public class RegionsSettings {
             if (player != null) {
                 PlayerMessage.to(player).appendLine(localization.getString("region_settings_successful_reload"), ChatColor.GREEN).send();
             }
-            getLogger().info(prefixConsole + "Region settings reloaded successfully.");
+            getLogger().info(prefixConsole + "Region settings reloaded successfully");
         } catch (Exception e) {
             getLogger().severe(prefixConsole + "Error reloading regions.yml: " + e.getMessage());
             if (player != null) {

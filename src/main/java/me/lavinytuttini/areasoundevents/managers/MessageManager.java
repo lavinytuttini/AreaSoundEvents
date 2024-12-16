@@ -6,7 +6,7 @@ import org.bukkit.ChatColor;
 
 public class MessageManager {
     public static String getColoredMessage(String message) {
-        if (Utils.isServerVersionNewerThan(ServerVersion.v1_19_R1)) {
+        if (Utils.isServerVersionNewerThan(ServerVersion.v1_19_1)) {
             return ChatColor.translateAlternateColorCodes('&', message);
         } else {
             return translateLegacyColors(message);

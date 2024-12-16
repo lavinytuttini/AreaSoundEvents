@@ -1,12 +1,12 @@
 package me.lavinytuttini.areasoundevents.utils;
 
 import me.lavinytuttini.areasoundevents.AreaSoundEvents;
+import org.bukkit.Bukkit;
 import org.bukkit.SoundCategory;
 
 import javax.annotation.Nullable;
 import java.util.*;
 
-import static org.bukkit.Bukkit.getServer;
 import static org.bukkit.Bukkit.getLogger;
 
 public class Utils {
@@ -23,8 +23,17 @@ public class Utils {
             return serverVersion;
         }
 
-        String bukkitName = getServer().getClass().getPackage().getName();
-        serverVersion = ServerVersion.valueOf(bukkitName.replace("org.bukkit.craftbukkit.", ""));
+        String bukkitVersion = Bukkit.getBukkitVersion();
+        getLogger().info(prefixConsole + "Bukkit version detected: " + bukkitVersion);
+
+        serverVersion = ServerVersion.fromString(bukkitVersion);
+
+        if (serverVersion == ServerVersion.UNKNOWN) {
+            getLogger().severe(prefixConsole + "The detected server version (" + bukkitVersion + ") is not supported by this plugin");
+        } else {
+            getLogger().info(prefixConsole + "Detected server version compatibility");
+        }
+
         return serverVersion;
     }
 
@@ -34,7 +43,7 @@ public class Utils {
             if (floatArg >= 0 && floatArg <= 1) {
                 return floatArg;
             } else {
-                getLogger().warning(prefixConsole + "Float argument out of range (0~1).");
+                getLogger().warning(prefixConsole + "Float argument out of range (0~1)");
             }
         } catch (NumberFormatException e) {
             logParsingException("Float", argument, e, defaultValue);
@@ -118,7 +127,7 @@ public class Utils {
     }
 
     private static void logValueException(String valueType, String key, Object defaultValue) {
-        getLogger().warning(prefixConsole + "'" + key + "' has an invalid or missing value. Expected " + valueType + ".");
+        getLogger().warning(prefixConsole + "'" + key + "' has an invalid or missing value. Expected " + valueType);
         getLogger().info(prefixConsole + "'" + key + "' will be set with a default value: " + defaultValue);
     }
 }

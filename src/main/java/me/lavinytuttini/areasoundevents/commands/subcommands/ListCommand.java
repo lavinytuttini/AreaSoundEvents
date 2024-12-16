@@ -88,7 +88,7 @@ public class ListCommand extends SubCommand {
                 ChatColor.GREEN,
                 ClickEvent.Action.SUGGEST_COMMAND,
                 "/areasoundevents modify " + regionName,
-                localization.getString("commands_list_tooltip_modify_button") + ChatColor.GOLD + regionName
+                localization.getString("commands_list_tooltip_modify_button") + " " + ChatColor.GOLD + regionName
         );
 
         ComponentBuilder removeButtonBuilder = createButton(
@@ -96,7 +96,7 @@ public class ListCommand extends SubCommand {
                 ChatColor.RED,
                 ClickEvent.Action.RUN_COMMAND,
                 "/areasoundevents remove " + regionName,
-                localization.getString("commands_list_tooltip_remove_button") + ChatColor.GOLD + regionName
+                localization.getString("commands_list_tooltip_remove_button") + " " + ChatColor.GOLD + regionName
         );
 
         ComponentBuilder regionButtonBuilder = createButton(
