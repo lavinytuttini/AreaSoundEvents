@@ -47,7 +47,7 @@ public class LocalizationManager {
         if (!langFolder.exists()) {
             boolean created = langFolder.mkdirs();
             if (!created) {
-                getLogger().warning(prefixConsole + "Failed to create lang folder.");
+                getLogger().warning(prefixConsole + "Failed to create lang folder");
                 return;
             }
         }
@@ -83,14 +83,14 @@ public class LocalizationManager {
 
     public static LocalizationManager getInstance() {
         if (instance == null) {
-            getLogger().warning(prefixConsole + "Localization has not been initialized.");
+            getLogger().warning(prefixConsole + "Localization has not been initialized");
         }
         return instance;
     }
 
     public static void initialize(AreaSoundEvents areaSoundEvents, String languageCode) {
         if (instance != null) {
-            getLogger().warning(prefixConsole + "Localization has already been initialized.");
+            getLogger().warning(prefixConsole + "Localization has already been initialized");
         }
         instance = new LocalizationManager(areaSoundEvents, languageCode);
     }

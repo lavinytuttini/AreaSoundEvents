@@ -14,12 +14,12 @@ public class PluginManager {
         Plugin plugin = getPluginManager().getPlugin(pluginName);
 
         if (!(pluginType.isInstance(plugin))) {
-            getLogger().severe(prefixConsole + pluginName + " not found or is not of the correct type! Disabling plugin.");
+            getLogger().severe(prefixConsole + pluginName + " not found or is not of the correct type! Disabling plugin");
             getPluginManager().disablePlugin(AreaSoundEvents.getInstance());
             return null;
         }
 
-        getLogger().info(prefixConsole + "Plugin '" + pluginName + "' is present.");
+        getLogger().info(prefixConsole + "Plugin '" + pluginName + "' is present");
         return pluginType.cast(plugin);
     }
 }
