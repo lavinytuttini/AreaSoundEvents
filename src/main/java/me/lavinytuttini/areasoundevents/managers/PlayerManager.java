@@ -14,6 +14,7 @@ import me.lavinytuttini.areasoundevents.data.RegionData;
 import me.lavinytuttini.areasoundevents.settings.ConfigSettings;
 import me.lavinytuttini.areasoundevents.settings.RegionsSettings;
 import me.lavinytuttini.areasoundevents.utils.PlayerMessage;
+import org.bukkit.Bukkit;
 import org.bukkit.ChatColor;
 import org.bukkit.Location;
 import org.bukkit.entity.Player;
@@ -21,6 +22,7 @@ import org.bukkit.scheduler.BukkitRunnable;
 import org.bukkit.scheduler.BukkitTask;
 
 import java.util.Map;
+import java.util.Objects;
 import java.util.UUID;
 import java.util.concurrent.ConcurrentHashMap;
 
@@ -29,17 +31,26 @@ public class PlayerManager {
     private final Map<UUID, BukkitTask> runningTasks = new ConcurrentHashMap<>();
     private final ConfigSettings configSettings = ConfigSettings.getInstance();
     private final LocalizationManager localization = LocalizationManager.getInstance();
+    private final AreaSoundEvents areaSoundEvents = AreaSoundEvents.getInstance();
 
     public void quitEvent(Player player) {
         entered.remove(player);
     }
 
     public void joinEvent(Player player) {
-        enterRegion(player);
+        Bukkit.getScheduler().runTaskLater(areaSoundEvents, () -> enterRegion(player), configSettings.getDefaultSettings().getDefaultDelayPlaySound());
     }
 
     public void moveEvent(Player player) {
         enterRegion(player);
+    }
+
+    public void teleportEvent(Player player) {
+        Bukkit.getScheduler().runTaskLater(areaSoundEvents, () -> enterRegion(player), configSettings.getDefaultSettings().getDefaultDelayPlaySound());
+    }
+
+    public void respawnEvent(Player player) {
+        Bukkit.getScheduler().runTaskLater(areaSoundEvents, () -> enterRegion(player), configSettings.getDefaultSettings().getDefaultDelayPlaySound());
     }
 
     private void enterRegion(Player player) {
@@ -47,32 +58,41 @@ public class PlayerManager {
         ApplicableRegionSet applicableRegionSet = getRegionsAtPlayerLocation(localPlayer);
         boolean playerInsideRegion = false;
 
+        RegionData newRegionData = null;
         for (ProtectedRegion region : applicableRegionSet) {
             if (isPlayerInsideRegion(player, region)) {
                 playerInsideRegion = true;
+                newRegionData = getRegionDataForPlayer(player, applicableRegionSet);
                 break;
             }
         }
 
         if (playerInsideRegion) {
-            if (!entered.containsKey(player)) {
-                RegionData regionData = getRegionDataForPlayer(player, applicableRegionSet);
-                if (regionData != null) {
+            if (entered.containsKey(player)) {
+                PlayerData currentPlayerData = entered.get(player);
+                if (!currentPlayerData.getRegion().equals(Objects.requireNonNull(newRegionData).getName())) {
+                    cancelLoopingSoundTask(player);
+                    stopSoundForPlayer(player, currentPlayerData);
+                    entered.remove(player);
+                }
+            }
 
-                    PlayerData playerData = new PlayerData(regionData.getSound(), regionData.getSource(), regionData.getName());
+            if (!entered.containsKey(player)) {
+                if (newRegionData != null) {
+                    PlayerData playerData = new PlayerData(newRegionData.getSound(), newRegionData.getSource(), newRegionData.getName());
                     entered.put(player, playerData);
 
-                    if (regionData.isLoop()) {
-                        startLoopingSoundTask(player, regionData);
+                    if (newRegionData.isLoop()) {
+                        startLoopingSoundTask(player, newRegionData);
                     } else {
-                        playSoundForPlayer(player, regionData);
+                        playSoundForPlayer(player, newRegionData);
                     }
 
                     if (configSettings.getMainSettings().isSilentMode()) {
                         PlayerMessage.to(player)
-                                .appendLineFormatted(localization.getString("information_player_enters_region"), ChatColor.GREEN, regionData.getName())
+                                .appendLineFormatted(localization.getString("information_player_enters_region"), ChatColor.GREEN, newRegionData.getName())
                                 .appendNewLine()
-                                .appendFormatted(localization.getString("information_player_enters_region_sound"), ChatColor.GREEN, regionData.getSound())
+                                .appendFormatted(localization.getString("information_player_enters_region_sound"), ChatColor.GREEN, newRegionData.getSound())
                                 .send();
                     }
                 }
