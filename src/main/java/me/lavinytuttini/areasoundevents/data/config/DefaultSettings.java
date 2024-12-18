@@ -11,6 +11,7 @@ public class DefaultSettings {
     private int defaultListPageSize;
     private boolean defaultLoopSound;
     private int defaultSoundLoopTime;
+    private long defaultDelayPlaySound;
 
     public SoundCategory getDefaultSoundCategory() {
         return defaultSoundCategory;
@@ -74,5 +75,13 @@ public class DefaultSettings {
 
     public void setDefaultSoundLoopTime(int defaultSoundLoopTime) {
         this.defaultSoundLoopTime = defaultSoundLoopTime;
+    }
+
+    public long getDefaultDelayPlaySound() {
+        return defaultDelayPlaySound;
+    }
+
+    public void setDefaultDelayPlaySound(long defaultDelayPlaySound) {
+        this.defaultDelayPlaySound = defaultDelayPlaySound;
     }
 }
