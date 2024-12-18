@@ -81,6 +81,7 @@ public class ConfigSettings {
         loadSetting(config, pathDefaultSettings + "default-list-page-size", Integer.class, defaultSettings::setDefaultListPageSize, 2);
         loadSetting(config, pathDefaultSettings + "default-loop-sound", Boolean.class, defaultSettings::setDefaultLoopSound, false);
         loadSetting(config, pathDefaultSettings + "default-loop-time", Integer.class, defaultSettings::setDefaultSoundLoopTime, 60);
+        loadSetting(config, pathDefaultSettings + "default-delay-play-sound", Long.class, defaultSettings::setDefaultDelayPlaySound, 5L);
     }
 
     private void loadDefaultSubcommandPermissions(FileConfiguration config) {
